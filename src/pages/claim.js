@@ -65,12 +65,6 @@ async function claimTokens() {
     <div>
       <Navbar />
       <div className="p-4">
-      <button
-        className="bg-[#002D74] text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
-        onClick={getBalance}
-      >
-        Get Balance
-      </button>
 
       <button
         className="bg-[#002D74] text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"

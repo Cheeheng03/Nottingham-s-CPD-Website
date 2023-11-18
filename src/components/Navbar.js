@@ -2,15 +2,13 @@ import React from 'react';
 
 function Navbar() {
   return (
-    <nav className='nav'>
-      <a href='/' className='menu'>Nottingham SCPD events</a>
-      <ul>
-        <li><a href="/claim">Claim Tokens</a></li>
-        {/* <li><a href="/signup">Sign Up</a></li> */}
-        {/*    */}
-        {/* <li><a href="/login">Login</a></li> */}
-        <li><a href="/eventcreation">Event Creation</a></li>
-        <li><a href="/eventlist">Event List</a></li>
+    <nav className='bg-[#002D74] text-white p-4 flex justify-between items-center'>
+      <a href='/' className='text-2xl font-bold'>Nottingham SCPD Events</a>
+      <ul className='flex space-x-4'>
+        <li><a href="/claim" className='hover:underline'>Claim Tokens</a></li>
+        <li><a href="/eventcreation" className='hover:underline'>Event Creation</a></li>
+        <li><a href="/eventlist" className='hover:underline'>Event List</a></li>
+        <li><a href="/logout" className='hover:underline'>Logout</a></li>
       </ul>
     </nav>
   );

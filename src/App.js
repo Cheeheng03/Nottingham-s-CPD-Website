@@ -2,7 +2,7 @@ import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Claim from './pages/claim';
-import Home from './pages/home';
+import Logout from './pages/logout';
 import Signup from './pages/signup';
 import Database from './pages/database';
 import Login from './pages/login';
@@ -21,9 +21,10 @@ function App() {
             <Route path="/claim" element={<Claim />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/database" element={<Database />} />
-            <Route path="/home" element={<Home />} />
+            <Route path="/logout" element={<Logout setAccountAddress={""} />} />
             <Route path="/eventcreation" element={<CreateEventForm />} />
             <Route path="/eventlist" element={<EventList />} />
+
           </Routes>
         </div>
       </div>

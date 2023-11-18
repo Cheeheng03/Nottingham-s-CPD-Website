@@ -5,8 +5,41 @@ import emailjs from "@emailjs/browser";
 import Navbar from '../components/Navbar';
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
-const contractAddress = '0xA711f695D969AE2edE87A8c834B97615B705c75a';
+const contractAddress = '0x39AFF1Fa84D79036049EB33D59F69f0631E0Abea';
 const contractABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "venue",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "ipfsHash",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			}
+		],
+		"name": "createEvent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -42,39 +75,6 @@ const contractABI = [
 		],
 		"name": "EventCreated",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "time",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "venue",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "ipfsHash",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "description",
-				"type": "string"
-			}
-		],
-		"name": "createEvent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -265,6 +265,7 @@ export default function CreateEventForm() {
     const [time, setTime] = useState('');
     const [image, setImage] = useState('');
     const [description, setDescription] = useState('');
+	const [fileName, setFileName] = useState('');
 
     const signer = provider.getSigner();
     const myContract = new ethers.Contract(contractAddress, contractABI, signer);
@@ -304,16 +305,18 @@ export default function CreateEventForm() {
         }
     };
 
-    const handleImageChange = (event) => {
-        if (event.target.files.length > 0) {
-            const file = event.target.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImage(reader.result.toString());
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+	const handleImageChange = (event) => {
+		if (event.target.files.length > 0) {
+			const file = event.target.files[0];
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setImage(reader.result.toString());
+				setFileName(file.name);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+	
 
     return (
         <div>
@@ -379,21 +382,26 @@ export default function CreateEventForm() {
 						Event Image:
 					</label>
 					<div className="flex items-center justify-between border rounded-md px-4 py-2 bg-gray-100">
-						<span className="text-gray-500">Choose a file</span>
+						<div>
+							<span className="text-gray-500">{fileName || 'Choose a file'}</span>
+							{image && <img className="max-w-full h-128 mt-2" src={image} alt="Selected Event Image" />}
+						</div>
 						<input
-						className="hidden"
-						type="file"
-						onChange={handleImageChange}
-						id="eventImage"
+							className="hidden"
+							type="file"
+							onChange={handleImageChange}
+							id="eventImage"
 						/>
 						<label
-						className="cursor-pointer text-blue-500 hover:underline"
-						htmlFor="eventImage"
+							className="cursor-pointer text-blue-500 hover:underline"
+							htmlFor="eventImage"
 						>
-						Browse
+							Browse
 						</label>
 					</div>
 				</div>
+
+
 
 				<div className="mb-4">
 				<button

@@ -3,8 +3,41 @@ import { ethers } from 'ethers';
 import Navbar from '../components/Navbar';
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
-const contractAddress = '0xA711f695D969AE2edE87A8c834B97615B705c75a';
+const contractAddress = '0x39AFF1Fa84D79036049EB33D59F69f0631E0Abea';
 const contractABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "venue",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "ipfsHash",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			}
+		],
+		"name": "createEvent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -40,39 +73,6 @@ const contractABI = [
 		],
 		"name": "EventCreated",
 		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "time",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "venue",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "ipfsHash",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "description",
-				"type": "string"
-			}
-		],
-		"name": "createEvent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -285,7 +285,6 @@ export default function EventList() {
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 						{eventsList.map((event, index) => (
 							<div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
-								{/* Increased the height classes for larger images */}
 								<img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 sm:h-72 object-cover" />
 								<div className="p-4">
 									<p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>

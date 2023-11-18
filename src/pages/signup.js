@@ -132,8 +132,12 @@ function Signup() {
               onChange={handleConfirmPasswordChange}
               required
             />
+          </div>
+          
+          <div className="mb-4">
             {!passwordMatch && <p>Passwords do not match.</p>}
           </div>
+          
 
           <div className="flex items-center mb-2">
             <button className="w-1/2 bg-[#002D74] text-white font-bold py-2 px-4 rounded hover:bg-[#002D74]/90 focus:outline-none focus:shadow-outline" type="submit">Register</button>
