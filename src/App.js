@@ -1,6 +1,7 @@
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './pages/home';
 import Claim from './pages/claim';
 import Logout from './pages/logout';
 import Signup from './pages/signup';
@@ -17,6 +18,7 @@ function App() {
         <div className='component-container'>
           <Routes>
             <Route path="/" element={<Connect />} />
+            <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/claim" element={<Claim />} />
             <Route path="/signup" element={<Signup />} />
