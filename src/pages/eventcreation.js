@@ -5,8 +5,69 @@ import emailjs from "@emailjs/browser";
 import Navbar from '../components/Navbar';
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
-const contractAddress = '0x39AFF1Fa84D79036049EB33D59F69f0631E0Abea';
+const contractAddress = '0x881E5586C6e1F6DF14647869Bc0aa99a30d95542';
 const contractABI = [
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "eventId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "creationTime",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "venue",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
+			}
+		],
+		"name": "EventCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "eventId",
+				"type": "uint256"
+			}
+		],
+		"name": "EventPublished",
+		"type": "event"
+	},
 	{
 		"inputs": [
 			{
@@ -39,42 +100,6 @@ const contractABI = [
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "eventId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "time",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "venue",
-				"type": "string"
-			}
-		],
-		"name": "EventCreated",
-		"type": "event"
 	},
 	{
 		"inputs": [],
@@ -111,6 +136,11 @@ const contractABI = [
 			},
 			{
 				"internalType": "uint256",
+				"name": "creationTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
 				"name": "time",
 				"type": "uint256"
 			},
@@ -128,6 +158,11 @@ const contractABI = [
 				"internalType": "string",
 				"name": "description",
 				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "creator",
+				"type": "address"
 			},
 			{
 				"internalType": "bool",
@@ -156,6 +191,11 @@ const contractABI = [
 					},
 					{
 						"internalType": "uint256",
+						"name": "creationTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
 						"name": "time",
 						"type": "uint256"
 					},
@@ -175,6 +215,11 @@ const contractABI = [
 						"type": "string"
 					},
 					{
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					},
+					{
 						"internalType": "bool",
 						"name": "isActive",
 						"type": "bool"
@@ -183,6 +228,25 @@ const contractABI = [
 				"internalType": "struct EventRegistry.Event[]",
 				"name": "",
 				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_eventId",
+				"type": "uint256"
+			}
+		],
+		"name": "getCreationTime",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -212,6 +276,11 @@ const contractABI = [
 					},
 					{
 						"internalType": "uint256",
+						"name": "creationTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
 						"name": "time",
 						"type": "uint256"
 					},
@@ -231,6 +300,11 @@ const contractABI = [
 						"type": "string"
 					},
 					{
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					},
+					{
 						"internalType": "bool",
 						"name": "isActive",
 						"type": "bool"
@@ -239,6 +313,167 @@ const contractABI = [
 				"internalType": "struct EventRegistry.Event",
 				"name": "",
 				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_eventId",
+				"type": "uint256"
+			}
+		],
+		"name": "getEventCreator",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_eventId",
+				"type": "uint256"
+			}
+		],
+		"name": "getEventDetails",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "time",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "venue",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "ipfsHash",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
+		"name": "getEventsCreatedByUser",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "eventId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "creationTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					},
+					{
+						"internalType": "string",
+						"name": "venue",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "ipfsHash",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "address",
+						"name": "creator",
+						"type": "address"
+					},
+					{
+						"internalType": "bool",
+						"name": "isActive",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct EventRegistry.Event[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTotalEvents",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "isEventPublished",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -256,8 +491,21 @@ const contractABI = [
 		],
 		"stateMutability": "view",
 		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_eventId",
+				"type": "uint256"
+			}
+		],
+		"name": "removePublishedEvent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	}
-]
+];
 
 export default function CreateEventForm() {
     const [name, setName] = useState('');

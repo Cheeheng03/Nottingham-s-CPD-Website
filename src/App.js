@@ -10,6 +10,10 @@ import Login from './pages/login';
 import CreateEventForm from './pages/eventcreation'
 import EventList from './pages/eventlist'
 import Connect from './pages/connect'
+import VotePage from './pages/voting'
+import StudentEvents from './pages/studentevent';
+import CreatedList from './pages/createdlist';
+import CreateQuestionnaire from './pages/questionnaire';
 
 function App() {
   return (
@@ -26,7 +30,10 @@ function App() {
             <Route path="/logout" element={<Logout setAccountAddress={""} />} />
             <Route path="/eventcreation" element={<CreateEventForm />} />
             <Route path="/eventlist" element={<EventList />} />
-
+            <Route path="/vote/:eventId" element={<VotePage />} />
+            <Route path="/studentevents" element={<StudentEvents />} />
+            <Route path="/createdlist" element={<CreatedList />} />
+            <Route path="/questionnaire/:eventId" element={<CreateQuestionnaire />} />
           </Routes>
         </div>
       </div>
