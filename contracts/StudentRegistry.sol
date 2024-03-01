@@ -14,6 +14,7 @@ contract StudentInfo {
 
     Student[] public students;
     mapping(string => bool) public studentIDExists;
+    mapping(address => bool) public walletAddressExists;
 
     event StudentRegistered(address indexed walletAddress, string studentID, string name, string email);
 
@@ -24,10 +25,12 @@ contract StudentInfo {
         require(bytes(_password).length > 0, "Password is required");
 
         require(!studentIDExists[_studentID], "Student with this ID already registered");
+        require(!walletAddressExists[msg.sender], "Student with this wallet address already registered");
 
         Student memory newStudent = Student(_studentID, _name, _email, _password, msg.sender);
         students.push(newStudent);
         studentIDExists[_studentID] = true;
+        walletAddressExists[msg.sender] = true;
 
         emit StudentRegistered(msg.sender, _studentID, _name, _email);
     }
@@ -50,6 +53,16 @@ contract StudentInfo {
         }
         // If the student with the provided student ID is not found, return default values
         return ("", "", "", "", address(0), "");
+    }
+
+    function getStudentInfoByAddress(address _walletAddress) public view returns (string memory, string memory, string memory, string memory, address) {
+        for (uint256 i = 0; i < students.length; i++) {
+            if (students[i].walletAddress == _walletAddress) {
+                return (students[i].studentID, students[i].name, students[i].email, students[i].password, students[i].walletAddress);
+            }
+        }
+        // If the student with the provided wallet address is not found, return default values
+        return ("", "", "", "", address(0));
     }
     
     function getAllStudents() public view returns (Student[] memory) {

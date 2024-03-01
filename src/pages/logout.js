@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Logout({ setAccountAddress }) {
+function Logout() {
     const navigate = useNavigate();
 
-
-        setAccountAddress('');
+    useEffect(() => {
         navigate('/');
+    }, [navigate]);
 
-
+    return null;
+    
 }
 
 export default Logout;

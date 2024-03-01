@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import "./EventRegistry.sol";
+
 contract QuestionnaireContract {
     address public owner;
+    EventRegistry public eventRegistry;
 
     struct Questionnaire {
         string[] questions;
@@ -11,14 +14,16 @@ contract QuestionnaireContract {
     }
 
     mapping(uint256 => Questionnaire) private eventQuestionnaires;
+    mapping(uint256 => bool) private eventHasQuestionnaire;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the contract owner");
         _;
     }
 
-    constructor() {
+    constructor(address _eventRegistryAddress) {
         owner = msg.sender;
+        eventRegistry = EventRegistry(_eventRegistryAddress);
     }
 
     function addQuestionnaire(
@@ -36,6 +41,8 @@ contract QuestionnaireContract {
         questionnaire.questions = _questions;
         questionnaire.options = _options;
         questionnaire.correctAnswers = _correctAnswers;
+
+        eventHasQuestionnaire[_eventId] = true;
     }
 
     function getQuestionnaire(uint256 _eventId) external view returns (
@@ -47,5 +54,9 @@ contract QuestionnaireContract {
         questions = questionnaire.questions;
         options = questionnaire.options;
         correctAnswers = questionnaire.correctAnswers;
+    }
+
+    function questionnaireExists(uint256 _eventId) external view returns (bool) {
+        return eventHasQuestionnaire[_eventId];
     }
 }

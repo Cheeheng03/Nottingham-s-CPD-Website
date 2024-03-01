@@ -34,8 +34,6 @@ contract VotingContract {
     }
 
     function vote(uint256 _eventId, uint256 _tokens) external beforeDeadline(_eventId) {
-        require(!hasVoted[msg.sender], "You have already voted");
-
         tokenVotes[_eventId][msg.sender] += 1;
         eventVotes[_eventId] += _tokens;
         totalVotes += _tokens;
@@ -46,25 +44,19 @@ contract VotingContract {
         decideFinalTokenAmount(_eventId);
     }
 
-    function decideFinalTokenAmount(uint256 _eventId) internal {
+   function decideFinalTokenAmount(uint256 _eventId) internal {
         // Get the votes for each token
         uint256 votesFor5 = tokenTotalVotes[_eventId][5];
         uint256 votesFor10 = tokenTotalVotes[_eventId][10];
         uint256 votesFor15 = tokenTotalVotes[_eventId][15];
 
-        // Decide the final token amount based on votes
-        if (votesFor5 > 0 || votesFor10 > 0 || votesFor15 > 0) {
-            // There are votes for at least one option, choose the one with the most votes
-            if (votesFor5 >= votesFor10 && votesFor5 >= votesFor15) {
-                finalTokenAmount[_eventId] = 5;
-            } else if (votesFor10 >= votesFor15) {
-                finalTokenAmount[_eventId] = 10;
-            } else {
-                finalTokenAmount[_eventId] = 15;
-            }
-        } else {
-            // No votes for any option, set the final token amount to 5 by default
+        // Decide the final token amount based on votes (handle ties)
+        if (votesFor5 >= votesFor10 && votesFor5 >= votesFor15) {
             finalTokenAmount[_eventId] = 5;
+        } else if (votesFor10 >= votesFor15) {
+            finalTokenAmount[_eventId] = 10;
+        } else {
+            finalTokenAmount[_eventId] = 15;
         }
 
         // Emit an event to notify the final token amount
@@ -93,6 +85,11 @@ contract VotingContract {
         finalTokens = finalTokenAmount[_eventId];
     }
 
+    function getEventFinalTokens(uint256 _eventId) external view returns (uint256) {
+        require(_eventId > 0 && _eventId <= eventRegistry.getTotalEvents(), "Invalid event ID");
+        return finalTokenAmount[_eventId];
+    }
+
     function getVotesForToken(uint256 _eventId, address _voter) external view returns (uint256 votes) {
         return tokenVotes[_eventId][_voter];
     }
@@ -109,7 +106,7 @@ contract VotingContract {
         if (block.timestamp < votingDeadline) {
             remainingTime = votingDeadline - block.timestamp;
         }
-
+    
         return remainingTime;
     }
 }

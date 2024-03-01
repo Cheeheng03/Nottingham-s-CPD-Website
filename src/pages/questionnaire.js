@@ -4,410 +4,15 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { FiArrowLeft } from 'react-icons/fi';
+import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
+import { questionnaireContractAddress, questionnaireContractABI } from '../Address&Abi/QuestionnaireContract'
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
-const questionnaireContractAddress = '0x215D0AfFb688D11D353cF824514C81d43d88F661';
-const questionnaireContractABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_eventId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_questions",
-				"type": "string[]"
-			},
-			{
-				"internalType": "string[][]",
-				"name": "_options",
-				"type": "string[][]"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_correctAnswers",
-				"type": "string[]"
-			}
-		],
-		"name": "addQuestionnaire",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_eventId",
-				"type": "uint256"
-			}
-		],
-		"name": "getQuestionnaire",
-		"outputs": [
-			{
-				"internalType": "string[]",
-				"name": "questions",
-				"type": "string[]"
-			},
-			{
-				"internalType": "string[][]",
-				"name": "options",
-				"type": "string[][]"
-			},
-			{
-				"internalType": "string[]",
-				"name": "correctAnswers",
-				"type": "string[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-];
-const votingContractAddress = '0xF0C0fe57E8Fa38CEeC9D951DA2C7D08b450C1570';
-const votingContractABI = [
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_eventRegistryAddress",
-				"type": "address"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "uint256",
-				"name": "eventId",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "finalTokens",
-				"type": "uint256"
-			}
-		],
-		"name": "FinalTokenAmountDecided",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "eventCreationTime",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "eventRegistry",
-		"outputs": [
-			{
-				"internalType": "contract EventRegistry",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "eventVotes",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "finalTokenAmount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_eventId",
-				"type": "uint256"
-			}
-		],
-		"name": "getEventDetailsWithFinalTokenAmount",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "time",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "venue",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "ipfsHash",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "description",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "finalTokens",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_eventId",
-				"type": "uint256"
-			}
-		],
-		"name": "getRemainingTime",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "remainingTime",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_eventId",
-				"type": "uint256"
-			}
-		],
-		"name": "getTotalVotesForEvent",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_eventId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "_voter",
-				"type": "address"
-			}
-		],
-		"name": "getVotesForToken",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "votes",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "hasVoted",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "tokenTotalVotes",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "tokenVotes",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalVotes",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "_eventId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "_tokens",
-				"type": "uint256"
-			}
-		],
-		"name": "vote",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	}
-];
   
 const CreateQuestionnaire = () => {
     const { eventId } = useParams();
     const [eventDetails, setEventDetails] = useState(null);
+	const [signerAddress, setSignerAddress] = useState('');
 
     // Form state
     const [question1, setQuestion1] = useState('');
@@ -442,6 +47,18 @@ const CreateQuestionnaire = () => {
         };
 
         fetchEventDetails();
+
+		async function fetchSignerAddress() {
+			try {
+			  const signer = provider.getSigner();
+			  const address = await signer.getAddress();
+			  setSignerAddress(address);
+			} catch (error) {
+			  console.error('Error fetching signer address:', error);
+			}
+		  }
+	  
+		  fetchSignerAddress();
     }, [eventId]);
 
     const handleSubmit = async (e) => {
@@ -463,7 +80,6 @@ const CreateQuestionnaire = () => {
 
             await questionnaireContract.addQuestionnaire(eventId, questions, options, correctAnswers);
 
-            // Optionally, you can reset the form state after successful submission
             setQuestion1('');
             setAnswer1A('');
             setAnswer1B('');
@@ -483,7 +99,7 @@ const CreateQuestionnaire = () => {
 
     return (
         <div className="relative">
-            <Navbar />
+            <Navbar signerAddress={signerAddress} />
             <div className="flex items-center">
                 <Link to="/createdlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
                     <FiArrowLeft className="h-5 w-5 mr-1" />
@@ -533,8 +149,8 @@ const CreateQuestionnaire = () => {
                             onChange={(e) => setCorrectAnswer1(e.target.value)}
                         >
                             <option value="">Select Correct Answer</option>
-                            <option value="1A">1A</option>
-                            <option value="1B">1B</option>
+                            <option value="1">1A</option>
+                            <option value="2">1B</option>
                         </select>
                     </div>
 
@@ -570,8 +186,8 @@ const CreateQuestionnaire = () => {
                             onChange={(e) => setCorrectAnswer2(e.target.value)}
                         >
                             <option value="">Select Correct Answer</option>
-                            <option value="2A">2A</option>
-                            <option value="2B">2B</option>
+                            <option value="1">2A</option>
+                            <option value="2">2B</option>
                         </select>
                     </div>
 

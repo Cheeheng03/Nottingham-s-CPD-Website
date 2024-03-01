@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
+import { ethers } from 'ethers';
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 const fetchEvents = async () => {
     return [
@@ -13,16 +16,29 @@ const fetchEvents = async () => {
 
 function Home() {
     const [events, setEvents] = useState([]);
+    const [signerAddress, setSignerAddress] = useState('');
 
     useEffect(() => {
         fetchEvents().then(data => {
             setEvents(data);
         });
+
+        async function fetchSignerAddress() {
+            try {
+              const signer = provider.getSigner();
+              const address = await signer.getAddress();
+              setSignerAddress(address);
+            } catch (error) {
+              console.error('Error fetching signer address:', error);
+            }
+          }
+      
+        fetchSignerAddress();
     }, []);
 
     return (
         <div>
-            <Navbar />
+            <Navbar signerAddress={signerAddress} />
             <div className="container mx-auto mt-12">
                 {/* Major Event Section */}
                 {events.length > 0 && (

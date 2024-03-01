@@ -13,7 +13,9 @@ contract EventRegistry {
         string venue,
         address creator
     );
+    
     event EventPublished(uint256 indexed eventId);
+    event StudentEnrolled(uint256 indexed eventId, address indexed student);
 
     struct Event {
         uint256 eventId;
@@ -29,6 +31,7 @@ contract EventRegistry {
 
     mapping(uint256 => Event) public events;
     mapping(uint256 => bool) public isEventPublished;
+    mapping(uint256 => mapping(address => bool)) public enrolledStudents;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not the contract owner");
@@ -148,5 +151,49 @@ contract EventRegistry {
         }
 
         return eventsCreatedByUser;
+    }
+
+    function enrollStudent(uint256 _eventId) external {
+        require(_eventId > 0 && _eventId <= eventCount, "Invalid event ID");
+        address studentId = msg.sender;
+        
+        require(events[_eventId].isActive, "Event is not active");
+        require(!enrolledStudents[_eventId][studentId], "Student already enrolled");
+
+        enrolledStudents[_eventId][studentId] = true;
+
+        emit StudentEnrolled(_eventId, studentId);
+    }
+
+    function getEnrolledStudents(uint256 _eventId) external view returns (address[] memory) {
+        require(_eventId > 0 && _eventId <= eventCount, "Invalid event ID");
+
+        mapping(address => bool) storage enrolledMap = enrolledStudents[_eventId];
+        uint256 totalEnrolled = 0;
+
+        for (uint256 i = 0; i < eventCount; i++) {
+            if (enrolledMap[address(uint160(i))]) {
+                totalEnrolled++;
+            }
+        }
+
+        address[] memory enrolledList = new address[](totalEnrolled);
+        uint256 index = 0;
+
+        for (uint256 j = 0; j < eventCount; j++) {
+            address studentAddress = address(uint160(j));
+            if (enrolledMap[studentAddress]) {
+                enrolledList[index] = studentAddress;
+                index++;
+            }
+        }
+
+        return enrolledList;
+    }
+
+    function hasEnrolled(uint256 _eventId, address _studentAddress) external view returns (bool) {
+        require(_eventId > 0 && _eventId <= eventCount, "Invalid event ID");
+
+        return enrolledStudents[_eventId][_studentAddress];
     }
 }

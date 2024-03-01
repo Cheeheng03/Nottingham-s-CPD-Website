@@ -1,1119 +1,193 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
+import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { FiArrowLeft } from 'react-icons/fi';
+import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
+import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
+import { NOTTAddress, NOTTABI } from '../Address&Abi/NottinghamCoinContract'
+import { questionnaireContractAddress, questionnaireContractABI } from '../Address&Abi/QuestionnaireContract'
 
-
-const NOTTAddress = '0x13f4A7d3d812980754889bdeFd2190Ab086Fb57b';
-const NOTTAbi = [
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "approve",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "burn",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "burnFrom",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "initialOwner",
-				"type": "address"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [],
-		"name": "CheckpointUnorderedInsertion",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "numberOfTokens",
-				"type": "uint256"
-			}
-		],
-		"name": "claimTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "delegatee",
-				"type": "address"
-			}
-		],
-		"name": "delegate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "delegatee",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "nonce",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "expiry",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint8",
-				"name": "v",
-				"type": "uint8"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "r",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "s",
-				"type": "bytes32"
-			}
-		],
-		"name": "delegateBySig",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "ECDSAInvalidSignature",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "length",
-				"type": "uint256"
-			}
-		],
-		"name": "ECDSAInvalidSignatureLength",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "bytes32",
-				"name": "s",
-				"type": "bytes32"
-			}
-		],
-		"name": "ECDSAInvalidSignatureS",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "increasedSupply",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "cap",
-				"type": "uint256"
-			}
-		],
-		"name": "ERC20ExceededSafeSupply",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "allowance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "needed",
-				"type": "uint256"
-			}
-		],
-		"name": "ERC20InsufficientAllowance",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "balance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "needed",
-				"type": "uint256"
-			}
-		],
-		"name": "ERC20InsufficientBalance",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "approver",
-				"type": "address"
-			}
-		],
-		"name": "ERC20InvalidApprover",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "receiver",
-				"type": "address"
-			}
-		],
-		"name": "ERC20InvalidReceiver",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			}
-		],
-		"name": "ERC20InvalidSender",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			}
-		],
-		"name": "ERC20InvalidSpender",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "deadline",
-				"type": "uint256"
-			}
-		],
-		"name": "ERC2612ExpiredSignature",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "signer",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "ERC2612InvalidSigner",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "timepoint",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint48",
-				"name": "clock",
-				"type": "uint48"
-			}
-		],
-		"name": "ERC5805FutureLookup",
-		"type": "error"
-	},
-	{
-		"inputs": [],
-		"name": "ERC6372InconsistentClock",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "currentNonce",
-				"type": "uint256"
-			}
-		],
-		"name": "InvalidAccountNonce",
-		"type": "error"
-	},
-	{
-		"inputs": [],
-		"name": "InvalidShortString",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "mint",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "OwnableInvalidOwner",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "OwnableUnauthorizedAccount",
-		"type": "error"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint8",
-				"name": "bits",
-				"type": "uint8"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "SafeCastOverflowedUintDowncast",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "str",
-				"type": "string"
-			}
-		],
-		"name": "StringTooLong",
-		"type": "error"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "transferTokens",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "expiry",
-				"type": "uint256"
-			}
-		],
-		"name": "VotesExpiredSignature",
-		"type": "error"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "Approval",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "delegator",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "fromDelegate",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "toDelegate",
-				"type": "address"
-			}
-		],
-		"name": "DelegateChanged",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "delegate",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "previousVotes",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "newVotes",
-				"type": "uint256"
-			}
-		],
-		"name": "DelegateVotesChanged",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [],
-		"name": "EIP712DomainChanged",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "previousOwner",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "OwnershipTransferred",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "deadline",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint8",
-				"name": "v",
-				"type": "uint8"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "r",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "s",
-				"type": "bytes32"
-			}
-		],
-		"name": "permit",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "transfer",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "Transfer",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "from",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "to",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "value",
-				"type": "uint256"
-			}
-		],
-		"name": "transferFrom",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newOwner",
-				"type": "address"
-			}
-		],
-		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "spender",
-				"type": "address"
-			}
-		],
-		"name": "allowance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "balanceOf",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint32",
-				"name": "pos",
-				"type": "uint32"
-			}
-		],
-		"name": "checkpoints",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint48",
-						"name": "_key",
-						"type": "uint48"
-					},
-					{
-						"internalType": "uint208",
-						"name": "_value",
-						"type": "uint208"
-					}
-				],
-				"internalType": "struct Checkpoints.Checkpoint208",
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "clock",
-		"outputs": [
-			{
-				"internalType": "uint48",
-				"name": "",
-				"type": "uint48"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "CLOCK_MODE",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "decimals",
-		"outputs": [
-			{
-				"internalType": "uint8",
-				"name": "",
-				"type": "uint8"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "delegates",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "DOMAIN_SEPARATOR",
-		"outputs": [
-			{
-				"internalType": "bytes32",
-				"name": "",
-				"type": "bytes32"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "eip712Domain",
-		"outputs": [
-			{
-				"internalType": "bytes1",
-				"name": "fields",
-				"type": "bytes1"
-			},
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "version",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "chainId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "verifyingContract",
-				"type": "address"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "salt",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "uint256[]",
-				"name": "extensions",
-				"type": "uint256[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "getBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "timepoint",
-				"type": "uint256"
-			}
-		],
-		"name": "getPastTotalSupply",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "timepoint",
-				"type": "uint256"
-			}
-		],
-		"name": "getPastVotes",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "getVotes",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "name",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "nonces",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "numCheckpoints",
-		"outputs": [
-			{
-				"internalType": "uint32",
-				"name": "",
-				"type": "uint32"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "owner",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "symbol",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalSupply",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	}
-]
-
-function Claim() {
-  const [balanceInEther, setBalanceInEther] = useState('');
-
-  async function getBalance() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = await provider.getSigner();
-    const balance = await signer.getBalance();
-    const convertToEth = ethers.utils.formatUnits(balance, 18);
-    setBalanceInEther(convertToEth);
-  }
-
-  async function readDataFromSmartContract() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const usdtContract = new ethers.Contract(NOTTAddress, NOTTAbi, provider);
-    const name = await usdtContract.name();
-    const symbol = await usdtContract.symbol();
-    const decimals = await usdtContract.decimals();
-    const totalSupply = await usdtContract.totalSupply();
-    const myBalance = await usdtContract.balanceOf("0x2Ffd02772a9A33D73aD16908dF16900AD1326f3E");
-
-    alert(
-        `name = ${name}\n` +
-        `symbol = ${symbol}\n` +
-        `decimals = ${decimals}\n` +
-        `totalSupply = ${totalSupply / 1e18}\n` +
-        `myBalance = ${myBalance / 1e18}`
-    );
-}
-
-async function claimTokens() {
-    const numberOfTokensToClaim = 5;
+const Claim = () => {
+    const { eventId } = useParams();
+    const [event, setEvent] = useState(null);
+    const [questionnaire, setQuestionnaire] = useState(null);
+    const [selectedAnswers, setSelectedAnswers] = useState([]);
+    const [claimSuccess, setClaimSuccess] = useState(false);
+	const [claimingInProgress, setClaimingInProgress] = useState(false);
+	const [signerAddress, setSignerAddress] = useState('');
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = await provider.getSigner();
-    const ContractAbi = ["function claimTokens(uint256 numberOfTokens) external"];
-    const usdtContract = new ethers.Contract(NOTTAddress, ContractAbi, signer);
+    const signer = provider.getSigner();
+    const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
+    const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
+    const questionnaireContract = new ethers.Contract(questionnaireContractAddress, questionnaireContractABI, signer);
+	const NOTTContract = new ethers.Contract(NOTTAddress, NOTTABI, signer);
 
-    try {
-        // Call the claimTokens function with the specified number of tokens.
-        const txResponse = await usdtContract.claimTokens(numberOfTokensToClaim);
-        await txResponse.wait();
-        alert(`Claimed ${numberOfTokensToClaim} tokens successfully.`);
-    } catch (error) {
-        console.error(error);
-        alert("Failed to claim tokens. Please check your eligibility.");
+    useEffect(() => {
+		async function fetchEventDetails() {
+			try {
+				const eventData = await eventRegistryContract.getEvent(eventId);
+				const details = await votingContract.getEventDetailsWithFinalTokenAmount(eventId);
+				const eventDetails = {
+					eventId: eventData.eventId,
+					name: eventData.name,
+					time: eventData.time,
+					venue: eventData.venue,
+					ipfsHash: eventData.ipfsHash,
+					description: eventData.description,
+					finalTokens: details[5].toNumber(),
+				};
+				setEvent(eventDetails);
+	
+				const userAddress = await signer.getAddress();
+				const claimed = await NOTTContract.hasClaimed(eventId, userAddress);
+				setClaimSuccess(claimed);
+	
+				let fetchedQuestionnaire = null;
+				const questionnaireExists = await questionnaireContract.questionnaireExists(eventId);
+				if (questionnaireExists) {
+					fetchedQuestionnaire = await questionnaireContract.getQuestionnaire(eventId);
+				} else {
+					fetchedQuestionnaire = {
+						questions: ['Did you enjoy the event?', 'Did you gain something out of the event?'],
+						options: [['Yes', 'No'], ['Yes', 'No']],
+						correctAnswers: ['1', '1'],
+					};
+				}
+				setQuestionnaire(fetchedQuestionnaire);
+			} catch (error) {
+				console.error('Error fetching event details:', error);
+			}
+		}
+	
+		if (eventId) {
+			fetchEventDetails();
+		}
+
+		async function fetchSignerAddress() {
+			try {
+			  const signer = provider.getSigner();
+			  const address = await signer.getAddress();
+			  setSignerAddress(address);
+			} catch (error) {
+			  console.error('Error fetching signer address:', error);
+			}
+		  }
+	  
+		fetchSignerAddress();
+	}, [eventId, signer, eventRegistryContract, votingContract, questionnaireContract]);
+	
+
+    const handleAnswerSelection = (questionIndex, optionIndex) => {
+        const updatedAnswers = [...selectedAnswers];
+        updatedAnswers[questionIndex] = optionIndex;
+        setSelectedAnswers(updatedAnswers);
+    };
+
+    const claimTokens = async () => {
+        try {
+            const selectedAnswerStrings = selectedAnswers.map(answer => String(answer + 1));
+
+            const isQuestion1Correct =
+                questionnaire.correctAnswers[0] === selectedAnswerStrings[0];
+            const isQuestion2Correct =
+                questionnaire.correctAnswers[1] === selectedAnswerStrings[1];
+
+            if (isQuestion1Correct && isQuestion2Correct) {
+				setClaimingInProgress(true);
+                let tokensRewarded = event.finalTokens;
+                if (tokensRewarded === 0) {
+                    tokensRewarded = 5;
+                }
+				await NOTTContract.claimTokens(eventId, tokensRewarded);
+
+                setClaimSuccess(true);
+                alert('Tokens claimed successfully.');
+            } else {
+                alert('Answers are incorrect. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error claiming tokens:', error);
+        }
+    };
+	
+    if (!event || !questionnaire) {
+        return <div>Loading...</div>;
     }
-}
 
-  return (
-    <div>
-      <Navbar />
-      <div className="p-4">
+    return (
+        <div className="relative">
+            <Navbar signerAddress={signerAddress} />
+            <div className="flex items-center">
+                <Link
+                    to="/claimtoken"
+                    className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center"
+                >
+					 <FiArrowLeft className="h-5 w-5 mr-1" />
+                    Back to Attended Events
+                </Link>
+            </div>
 
-      {/* <button
-        className="bg-[#002D74] text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
-        onClick={readDataFromSmartContract}
-      >
-        Read Data from Smart Contract
-      </button> */}
-    </div>
+            <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">
+                {event.name}
+            </h3>
+            <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
+                <img
+                    src={`${event.ipfsHash}`}
+                    alt={event.name}
+                    className="w-full h-96 object-cover mb-4 rounded-lg"
+                />
+                <p className="text-lg font-semibold text-gray-800">
+                    Event ID: {event.eventId.toString()}
+                </p>
+                <p className="mt-1 text-gray-600">Name: {event.name}</p>
+                <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens === 0 ? 5 : event.finalTokens}</p>
 
-      <div className="p-4">
-      <h2 className="text-2xl font-bold mb-2">Claim Tokens</h2>
-      <button
-        className="bg-[#002D74] text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        onClick={claimTokens}
-      >
-        Claim Tokens
-      </button>
-    </div>
+                {/* Render questionnaire */}
+                <div className="mt-4">
+                    {questionnaire.questions.map((question, questionIndex) => (
+                        <div key={questionIndex} className="mb-4">
+                            <p className="font-semibold">{question}</p>
+                            <div>
+                                {questionnaire.options[questionIndex].map((option, optionIndex) => (
+                                    <div key={optionIndex} className="flex items-center mb-2">
+                                        <input
+                                            type="radio"
+                                            id={`question-${questionIndex}-option-${optionIndex}`}
+                                            name={`question-${questionIndex}`}
+                                            checked={selectedAnswers[questionIndex] === optionIndex}
+                                            onChange={() => handleAnswerSelection(questionIndex, optionIndex)}
+                                            className="mr-2"
+                                        />
+                                        <label htmlFor={`question-${questionIndex}-option-${optionIndex}`}>{option}</label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
-    </div>
-  );
-}
+				{claimSuccess || claimingInProgress ? (
+					<button
+						className="mt-4 bg-gray-400 text-white font-semibold px-4 py-2 rounded cursor-not-allowed"
+						disabled
+					>
+						Claimed
+					</button>
+				) : (
+					<button
+						onClick={claimTokens}
+						className="mt-4 bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+						disabled={claimingInProgress}
+					>
+						{claimingInProgress ? 'Claimed' : 'Claim'}
+					</button>
+				)}
+            </div>
+        </div>
+    );
+};
 
 export default Claim;
