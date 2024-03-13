@@ -1,4 +1,4 @@
-export const eventRegistryContractAddress = '0x03b4f41c1a0F4b7a1751DC7ec6D80EAF19AA00BE';
+export const eventRegistryContractAddress = '0x05c1D57282642379b2cc0349846285A248984196';
 export const eventRegistryContractABI = [
 	{
 		"inputs": [],

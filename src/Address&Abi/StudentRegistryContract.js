@@ -1,4 +1,4 @@
-export const StudentInfoAddress = '0xAC332cC933A678D8F837cC75d994ffFFcAEe4D2f';
+export const StudentInfoAddress = '0x6006C38941B29b44f3569bAE74092906B50578Db';
 
 export const StudentInfoAbi = [
 	{

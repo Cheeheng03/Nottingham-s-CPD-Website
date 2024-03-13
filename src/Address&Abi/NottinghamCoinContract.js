@@ -1,4 +1,4 @@
-export const NOTTAddress = '	';
+export const NOTTAddress = '0x385815Ca79ed0A954c0277d2651CcED5f2Fb40C6';
 export const NOTTABI = [
 	{
 		"inputs": [
