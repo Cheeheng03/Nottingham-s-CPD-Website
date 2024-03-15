@@ -112,18 +112,26 @@ export default function CreateEventForm() {
 				</div>
 
 				<div className="mb-4">
-					<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="eventVenue">
+					<label htmlFor="eventVenue" className="block text-gray-700 text-sm font-bold mb-2">
 						Event Venue:
 					</label>
-					<input
-						className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
-						type="text"
+					<select
 						id="eventVenue"
+						className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
 						value={venue}
 						onChange={(e) => setVenue(e.target.value)}
-						placeholder="Event Venue"
-					/>
+					>
+						<option value="">Select a venue</option>
+						<option value="F1A04">F1A04</option>
+						<option value="F1A12">F1A12</option>	
+						<option value="F1A13">F1A13</option>
+						<option value="F3C04">F3C04</option>
+						<option value="F4C02">F4C02</option>
+						<option value="BB80">BB80</option>
+						<option value="Great Hall">Great Hall</option>
+					</select>
 				</div>
+
 
 				<div className="mb-4">
 					<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="eventDescription">

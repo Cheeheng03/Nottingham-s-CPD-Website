@@ -17,6 +17,7 @@ import CreateQuestionnaire from './pages/questionnaire';
 import EditQuestionnaire from './pages/editquestionnaire';
 import Enroll from './pages/enroll';
 import Claim from './pages/claim';
+import Attendance from './pages/attendance';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/claimtoken" element={<ClaimToken />} />
             <Route path="/claim/:eventId" element={<Claim />} />
+            <Route path="/attendance/:eventId" element={<Attendance />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/database" element={<Database />} />
             <Route path="/logout" element={<Logout setAccountAddress={""} />} />

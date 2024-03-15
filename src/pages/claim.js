@@ -16,6 +16,7 @@ const Claim = () => {
     const [selectedAnswers, setSelectedAnswers] = useState([]);
     const [claimSuccess, setClaimSuccess] = useState(false);
 	const [claimingInProgress, setClaimingInProgress] = useState(false);
+    const [canClaim, setCanClaim] = useState(false);
 	const [signerAddress, setSignerAddress] = useState('');
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -77,6 +78,20 @@ const Claim = () => {
 		  }
 	  
 		fetchSignerAddress();
+
+        async function checkCanClaim() {
+            try {
+                const hasAttended = await NOTTContract.hasTakenAttendance(eventId, signerAddress);
+                const hasClaimed = await NOTTContract.hasClaimed(eventId, signerAddress);
+                setCanClaim(hasAttended && !hasClaimed);
+            } catch (error) {
+                console.error('Error checking if can claim tokens:', error);
+            }
+        }
+
+        if (eventId && signerAddress) {
+            checkCanClaim();
+        }
 	}, [eventId, signer, eventRegistryContract, votingContract, questionnaireContract]);
 	
 
@@ -122,11 +137,11 @@ const Claim = () => {
             <Navbar signerAddress={signerAddress} />
             <div className="flex items-center">
                 <Link
-                    to="/claimtoken"
+                    to={`/attendance/${eventId}`}
                     className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center"
                 >
-					 <FiArrowLeft className="h-5 w-5 mr-1" />
-                    Back to Attended Events
+                    <FiArrowLeft className="h-5 w-5 mr-1" />
+                    Back
                 </Link>
             </div>
 
@@ -169,22 +184,31 @@ const Claim = () => {
                     ))}
                 </div>
 
-				{claimSuccess || claimingInProgress ? (
-					<button
-						className="mt-4 bg-gray-400 text-white font-semibold px-4 py-2 rounded cursor-not-allowed"
-						disabled
-					>
-						Claimed
-					</button>
-				) : (
-					<button
-						onClick={claimTokens}
-						className="mt-4 bg-blue-500 text-white font-semibold px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-						disabled={claimingInProgress}
-					>
-						{claimingInProgress ? 'Claimed' : 'Claim'}
-					</button>
-				)}
+				{claimSuccess ? (
+                    <button
+                        className="mt-4 bg-gray-400 text-white font-semibold px-4 py-2 rounded cursor-not-allowed"
+                        disabled
+                    >
+                        Claimed
+                    </button>
+                ) : canClaim ? (
+                    <button
+                        onClick={claimTokens}
+                        className={`mt-4 font-semibold px-4 py-2 rounded ${
+                            claimingInProgress ? "bg-gray-400 text-white cursor-not-allowed" : "bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                        }`}
+                        disabled={claimingInProgress || !canClaim}
+                        >
+                        {claimingInProgress ? 'Claimed' : 'Claim'}
+                    </button>
+                ) : (
+                    <button
+                        className="mt-4 bg-gray-400 text-white font-semibold px-4 py-2 rounded cursor-not-allowed"
+                        disabled
+                    >
+                        Not Claimable
+                    </button>
+                )}
             </div>
         </div>
     );

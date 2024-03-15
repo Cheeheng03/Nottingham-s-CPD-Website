@@ -11,7 +11,8 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 
 contract NottinghamToken is ERC20, ERC20Burnable, Ownable, ERC20Permit, ERC20Votes {
     address public eventRegistryAddress;
-    mapping(address => mapping(uint256 => bool)) private _claimed; // Mapping to track claimed addresses for each event
+    mapping(address => mapping(uint256 => bool)) private _claimed;
+    mapping(address => mapping(uint256 => bool)) private _attendanceTaken;
 
     constructor(address _eventRegistryAddress)
         ERC20("NottinghamToken", "NOTT")
@@ -26,12 +27,10 @@ contract NottinghamToken is ERC20, ERC20Burnable, Ownable, ERC20Permit, ERC20Vot
         _mint(to, amount);
     }
 
-    // Function to get the balance of an address
     function getBalance(address account) public view returns (uint256) {
         return balanceOf(account);
     }
 
-    // Function to transfer tokens
     function transferTokens(address to, uint256 amount) public {
         require(to != address(0), "Invalid address");
         require(amount > 0, "Invalid amount");
@@ -39,33 +38,38 @@ contract NottinghamToken is ERC20, ERC20Burnable, Ownable, ERC20Permit, ERC20Vot
         _transfer(_msgSender(), to, amount);
     }
 
-    // Function to check if an address has claimed tokens for a specific event
     function hasClaimed(uint256 eventId, address account) public view returns (bool) {
         require(eventId > 0 && eventId <= eventRegistryContract(eventRegistryAddress).getTotalEvents(), "Invalid event ID");
 
-        // Check if the user has claimed tokens for the specified event
         return _claimed[account][eventId];
     }
 
-    // Function to allow users to claim tokens for a specific event
     function claimTokens(uint256 eventId, uint256 numberOfTokens) external {
         require(eventId > 0 && eventId <= eventRegistryContract(eventRegistryAddress).getTotalEvents(), "Invalid event ID");
         require(numberOfTokens > 0, "Number of tokens must be greater than 0");
         require(!_claimed[msg.sender][eventId], "Tokens already claimed for this event");
 
-        // Mint tokens to the user
         _mint(msg.sender, numberOfTokens * 10**decimals());
 
-        // Mark the address as claimed for the specified event
         _claimed[msg.sender][eventId] = true;
     }
 
-    // Function to instantiate EventRegistry contract
+    function markAttendance(uint256 eventId) external {
+        require(eventId > 0 && eventId <= eventRegistryContract(eventRegistryAddress).getTotalEvents(), "Invalid event ID");
+        require(!_attendanceTaken[msg.sender][eventId], "Attendance already marked for this event");
+
+        _attendanceTaken[msg.sender][eventId] = true;
+    }
+
+    function hasTakenAttendance(uint256 eventId, address account) public view returns (bool) {
+        require(eventId > 0 && eventId <= eventRegistryContract(eventRegistryAddress).getTotalEvents(), "Invalid event ID");
+
+        return _attendanceTaken[account][eventId];
+    }
+
     function eventRegistryContract(address _eventRegistryAddress) internal pure returns (EventRegistry) {
         return EventRegistry(_eventRegistryAddress);
     }
-
-    // The following functions are overrides required by Solidity.
 
     function _update(address from, address to, uint256 value)
         internal

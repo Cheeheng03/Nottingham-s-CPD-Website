@@ -45,8 +45,14 @@
                         ]);
             
                         const eventTime = event.time * 1000;
+                        const threeHoursAfterEvent = eventTime + (3 * 60 * 60 * 1000);
                         let status = currentTime < eventTime ? 'Active' : 'Past';
-            
+
+                        const hasAttended = await NOTTContract.hasTakenAttendance(event.eventId, address);
+                        if (status === 'Past' && currentTime >= threeHoursAfterEvent && !hasAttended) {
+                            return undefined;
+                        }
+
                         if (hasEnrolled && status === 'Past') {
                             return {
                                 eventId: event.eventId,
@@ -58,7 +64,8 @@
                                 finalTokens: finalTokens.toNumber(),
                                 remainingTime: remainingTime.toNumber(),
                                 totalVotes: await votingContract.getTotalVotesForEvent(event.eventId),
-                                claimed: claimed
+                                claimed: claimed,
+                                hasAttended: hasAttended
                             };
                         }
                     }));
@@ -112,7 +119,7 @@
                                             <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens === 0 ? 5 : event.finalTokens}</p>
                                         </div>
                                         <Link
-                                            to={`/claim/${event.eventId}`}
+                                            to={`/attendance/${event.eventId}`}
                                             className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center"
                                         >
                                             Claim Tokens
