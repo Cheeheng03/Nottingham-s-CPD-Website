@@ -232,7 +232,7 @@ const Attendance = () => {
                             className="bg-gray-400 text-white px-4 py-2 rounded-lg mt-2 cursor-not-allowed"
                             disabled
                         >
-                            {isAttendanceDue ? 'Attendance Due' : 'Attendance Recorded'}
+                            {isAttendanceDue && !attendanceMarked ? 'Attendance Due' : 'Attendance Recorded'}
                         </button>
                     ) : (   
                         <button
@@ -243,15 +243,13 @@ const Attendance = () => {
                             {markingAttendance ? 'Recording Attendance...' : isInitialLoading ? 'Loading...' : 'Take Attendance'}
                         </button>
                     )}
-                    {attendanceMarked && !isAttendanceDue && (
-                        <div className="mt-4">
-                            <Link to={`/claim/${eventId}`} className="text-blue-500 text-sm font-medium">
-                                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-1">
-                                    Claim Tokens
-                                </button>
-                            </Link>
-                        </div>
-                    )}
+                    <div className="mt-4">
+                        <Link to={`/claim/${eventId}`} className="text-blue-500 text-sm font-medium">
+                            <button className="bg-blue-500 text-white px-4 py-2 rounded-lg mt-1">
+                                Claim Tokens
+                            </button>
+                        </Link>
+                    </div>
                 </div>
             </div>
         </div>
