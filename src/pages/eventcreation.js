@@ -15,6 +15,7 @@ export default function CreateEventForm() {
     const [description, setDescription] = useState('');
 	const [fileName, setFileName] = useState('');
 	const [signerAddress, setSignerAddress] = useState('');
+	const [loading, setLoading] = useState(false);
 
     const signer = provider.getSigner();
     const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
@@ -40,12 +41,14 @@ export default function CreateEventForm() {
         const eventTime = Math.floor(new Date(time).getTime() / 1000);
 
         try {
+			setLoading(true);
             // Upload the image to IPFS and get the hash
             const ipfsHash = await uploadToIPFS(image);
 
             // Create the event using the IPFS hash
             const transaction = await eventRegistryContract.createEvent(name, eventTime, venue, ipfsHash, description);
             await transaction.wait();
+			setLoading(false);
             alert('Event created successfully');
 
             const emailParams = {
@@ -63,6 +66,7 @@ export default function CreateEventForm() {
         } catch (error) {
             console.error('Error creating event:', error);
             alert('Error creating event: ' + error.message);
+			setLoading(false);
         }
     };
 
@@ -82,6 +86,12 @@ export default function CreateEventForm() {
     return (
         <div>
 			<Navbar signerAddress={signerAddress} />
+			{loading && (
+                <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
+                    <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+                </div>
+            )}
 			<form onSubmit={handleSubmit} className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md">
 				<div className="mb-4">
 					<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="eventName">

@@ -13,6 +13,7 @@ const CreateQuestionnaire = () => {
     const { eventId } = useParams();
     const [eventDetails, setEventDetails] = useState(null);
 	const [signerAddress, setSignerAddress] = useState('');
+    const [loading, setLoading] = useState(false); 
 
     // Form state
     const [question1, setQuestion1] = useState('');
@@ -78,7 +79,10 @@ const CreateQuestionnaire = () => {
                 signer
             );
 
-            await questionnaireContract.addQuestionnaire(eventId, questions, options, correctAnswers);
+            setLoading(true);
+            const transaction = await questionnaireContract.addQuestionnaire(eventId, questions, options, correctAnswers);
+            await transaction.wait();
+			setLoading(false);
 
             setQuestion1('');
             setAnswer1A('');
@@ -90,6 +94,7 @@ const CreateQuestionnaire = () => {
             setCorrectAnswer2('');
         } catch (error) {
             console.error('Error submitting questionnaire:', error);
+            setLoading(false);
         }
     };
 
@@ -100,6 +105,12 @@ const CreateQuestionnaire = () => {
     return (
         <div className="relative">
             <Navbar signerAddress={signerAddress} />
+            {loading && (
+					<div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+						<div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
+						<p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+					</div>
+    	    )}
             <div className="flex items-center">
                 <Link to="/createdlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
                     <FiArrowLeft className="h-5 w-5 mr-1" />

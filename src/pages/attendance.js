@@ -29,6 +29,7 @@ const Attendance = () => {
     const [markingAttendance, setMarkingAttendance] = useState(false);
     const [isAttendanceDue, setIsAttendanceDue] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
     const { isLoaded, loadError } = useLoadScript({
       googleMapsApiKey: 'AIzaSyB92jFfU2cogCEM03VKTJwNTwXfd_iLH1I',
@@ -178,16 +179,22 @@ const Attendance = () => {
         if (!isInitialLoading && withinAttendanceArea && !attendanceMarked && !markingAttendance) {
             setMarkingAttendance(true);
             try {
-                await NOTTContract.markAttendance(eventId);
+                setLoading(true);
+                const transaction = await NOTTContract.markAttendance(eventId);
+                await transaction.wait();
+                setLoading(false);
                 setAttendanceMarked(true);
                 console.log("Attendance marked successfully!");
             } catch (error) {
                 console.error('Error marking attendance:', error);
+                setLoading(false);
             } finally {
                 setMarkingAttendance(false);
+                setLoading(false);
             }
         } else if (!isInitialLoading) {
             alert("You must be within the attendance area to mark attendance.");
+            setLoading(false);
         }
     };
 
@@ -197,6 +204,12 @@ const Attendance = () => {
     return (
         <div className="relative">
             <Navbar signerAddress={signerAddress} />
+            {loading && (
+                <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
+                    <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+                </div>
+    		)}
             <div className="flex items-center">
                 <Link to="/claimtoken" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
                     <FiArrowLeft className="h-5 w-5 mr-1" /> Back to Attended Events

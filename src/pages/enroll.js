@@ -16,6 +16,7 @@ const Enroll = () => {
     const [enrolled, setEnrolled] = useState(false);
     const [enrollmentInProgress, setEnrollmentInProgress] = useState(false);
 	const [signerAddress, setSignerAddress] = useState('');
+    const [loading, setLoading] = useState(false); 
     const [emailParams, setEmailParams] = useState({
         email: '',
         studentname: '',
@@ -75,7 +76,10 @@ const Enroll = () => {
     async function enrollStudent() {
 		try {
 			setEnrollmentInProgress(true);
-			await eventRegistryContract.enrollStudent(event.eventId);
+            setLoading(true);
+            const transaction = await eventRegistryContract.enrollStudent(event.eventId);
+            await transaction.wait();
+			setLoading(false);
 			console.log('Enrolled successfully!');
 			alert('Enrolled successfully!'); 
 
@@ -91,6 +95,7 @@ const Enroll = () => {
 		} catch (error) {
 			console.error('Error enrolling:', error);
             setEnrollmentInProgress(false);
+            setLoading(false);
 		} 
 		
 	}
@@ -102,6 +107,12 @@ const Enroll = () => {
     return (
         <div className="relative">
             <Navbar signerAddress={signerAddress} />
+            {loading && (
+					<div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+						<div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
+						<p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+					</div>
+    		)}
             <div className="flex items-center">
                 <Link
                     to="/studentevents"

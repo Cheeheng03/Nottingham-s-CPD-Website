@@ -141,7 +141,7 @@
                                             <div>
                                                 <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
                                                 <p className="mt-1 text-gray-600">Name: {event.name}</p>
-                                                <p className="mt-1 text-gray-600">Time: {new Date(event.time).toLocaleString()}</p>
+                                                <p className="mt-1 text-gray-600">Time: {new Date(event.time * 1000).toLocaleString()}</p>
                                                 <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
                                                 <p className="mt-1 text-gray-600">Description: {event.description}</p>
                                                 <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens === 0 ? 5 : event.finalTokens}</p>

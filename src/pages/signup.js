@@ -11,6 +11,7 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMatch, setPasswordMatch] = useState(true);
   const [accountAddress, setAccountAddress] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,13 +39,16 @@ function Signup() {
     const contract = new ethers.Contract(StudentInfoAddress, StudentInfoAbi, signer);
 
     try {
+      setLoading(true);
       const txResponse = await contract.registerStudent(studentID, name, email, password);
       await txResponse.wait();
+      setLoading(false);
       alert('Student registered successfully.');
       navigate('/');
     } catch (error) {
       console.error(error);
       alert('Student already registered.');
+      setLoading(false);
     }
   };
 
@@ -58,12 +62,14 @@ function Signup() {
     setPasswordMatch(e.target.value === password);
   };
 
-  const navigateToLogin = () => {
-    navigate('/');
-  };
-
   return (
     <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+      {loading && (
+        <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+            <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
+            <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+        </div>
+    	)}
       <div className="bg-gray-100 rounded-2xl shadow-lg max-w-md mx-auto p-8">
         <h2 className="font-bold text-2xl text-[#002D74] mb-6 text-center">Student Sign Up</h2>
 

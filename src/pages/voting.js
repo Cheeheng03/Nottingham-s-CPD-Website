@@ -22,9 +22,8 @@ const VotePage = () => {
 	const [totalVotesForToken10, setTotalVotesForToken10] = useState(0);
 	const [totalVotesForToken15, setTotalVotesForToken15] = useState(0);
 	const [signerAddress, setSignerAddress] = useState('');
+	const [loading, setLoading] = useState(false); 
 
-
-  
     useEffect(() => {
 		const initializePage = async () => {
 			await fetchEvent();
@@ -34,6 +33,7 @@ const VotePage = () => {
 			// Check if the user has already voted on page load
 			const userHasVoted = await getVotesForTokenFromBlockchain(eventId, tokensWorth) > 0;
 			setHasVoted(userHasVoted);
+
 		};
 		fetchSignerAddress();
 		initializePage();
@@ -169,9 +169,11 @@ const VotePage = () => {
 		  const userHasVoted = await getVotesForTokenFromBlockchain(eventId, tokensWorth) > 0;
 	  
 		  if (!userHasVoted) {
+			setLoading(true);
 			// Call the contract function to record the vote
-			await votingContract.vote(eventId, tokensWorth);
-	  
+			const transaction = await votingContract.vote(eventId, tokensWorth);
+            await transaction.wait();
+			setLoading(false);
 			// Set hasVoted to true to prevent multiple votes
 			setHasVoted(true);
 	  
@@ -192,9 +194,11 @@ const VotePage = () => {
 
 		  } else {
 			console.log('You have already voted for this event.');
+			setLoading(false);
 		  }
 		} catch (error) {
 		  console.error('Error handling vote:', error);
+		  setLoading(false);
 		}
 	  };
   
@@ -204,90 +208,96 @@ const VotePage = () => {
 
     return (
     <div className="relative">
-      <Navbar signerAddress={signerAddress} />
-      <div className="flex items-center">
-        <Link to="/eventlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
-          <FiArrowLeft className="h-5 w-5 mr-1" />
-          Back to Event List
-        </Link>
-      </div>
-  
-      <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">Vote for {event.name}</h3>
-      <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
-        <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-96 object-cover mb-4 rounded-lg" />
-        <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-        <p className="mt-1 text-gray-600">Name: {event.name}</p>
-        <p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
-        <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-        <p className="mt-1 text-gray-600">Description: {event.description}</p>
-        <p className="mt-1 text-gray-600">Remaining Time to Vote: {formatRemainingTime(remainingTime)}</p>
-
-		<div>
-			<label className="block mt-4 text-sm font-medium text-gray-700">
-				Number of Votes for 5 tokens:
-			</label>
-			<input
-				type="range"
-				min="0"
-				max="7"
-				value={Number(totalVotesForToken5)}
-				readOnly
-				className="mt-1 w-full"
-			/>
-			<p className="text-gray-600 text-center">{totalVotesForToken5.toString()}</p>
+		<Navbar signerAddress={signerAddress} />
+		{loading && (
+					<div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+						<div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
+						<p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+					</div>
+    	)}
+		<div className="flex items-center">
+			<Link to="/eventlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
+			<FiArrowLeft className="h-5 w-5 mr-1" />
+			Back to Event List
+			</Link>
 		</div>
+	
+		<h3 className="text-2xl font-bold text-center text-gray-800 mb-8">Vote for {event.name}</h3>
+		<div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
+			<img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-96 object-cover mb-4 rounded-lg" />
+			<p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
+			<p className="mt-1 text-gray-600">Name: {event.name}</p>
+			<p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
+			<p className="mt-1 text-gray-600">Venue: {event.venue}</p>
+			<p className="mt-1 text-gray-600">Description: {event.description}</p>
+			<p className="mt-1 text-gray-600">Remaining Time to Vote: {formatRemainingTime(remainingTime)}</p>
 
-		<div>
-			<label className="block mt-4 text-sm font-medium text-gray-700">
-				Number of Votes for 10 tokens:
-			</label>
-			<input
-				type="range"
-				min="0"
-				max="7"
-				value={Number(totalVotesForToken10)}
-				readOnly
-				className="mt-1 w-full"
-			/>
-			<p className="text-gray-600 text-center">{totalVotesForToken10.toString()}</p>
+			<div>
+				<label className="block mt-4 text-sm font-medium text-gray-700">
+					Number of Votes for 5 tokens:
+				</label>
+				<input
+					type="range"
+					min="0"
+					max="7"
+					value={Number(totalVotesForToken5)}
+					readOnly
+					className="mt-1 w-full"
+				/>
+				<p className="text-gray-600 text-center">{totalVotesForToken5.toString()}</p>
+			</div>
+
+			<div>
+				<label className="block mt-4 text-sm font-medium text-gray-700">
+					Number of Votes for 10 tokens:
+				</label>
+				<input
+					type="range"
+					min="0"
+					max="7"
+					value={Number(totalVotesForToken10)}
+					readOnly
+					className="mt-1 w-full"
+				/>
+				<p className="text-gray-600 text-center">{totalVotesForToken10.toString()}</p>
+			</div>
+
+			<div>
+				<label className="block mt-4 text-sm font-medium text-gray-700">
+					Number of Votes for 15 tokens:
+				</label>
+				<input
+					type="range"
+					min="0"
+					max="7"
+					value={Number(totalVotesForToken15)}
+					readOnly
+					className="mt-1 w-full"
+				/>
+				<p className="text-gray-600 text-center">{totalVotesForToken15.toString()}</p>
+			</div>
+
+			<label className="block mt-4 text-sm font-medium text-gray-700">Number of Tokens to Vote:</label>
+			<select
+			value={tokensWorth}
+			onChange={(e) => setTokensWorth(e.target.value)}
+			className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+			>
+			<option value="5">5 tokens</option>
+			<option value="10">10 tokens</option>
+			<option value="15">15 tokens</option>
+			</select>
+	
+			<button
+				onClick={handleVote}
+				className={`mt-4 p-2 rounded-md cursor-pointer ${
+				hasVoted ? 'bg-gray-400 text-gray-700' : 'bg-blue-500 text-white hover:bg-blue-600'
+				}`}
+				disabled={hasVoted}
+			>
+				{hasVoted ? 'Voted' : 'Vote'}
+			</button>
 		</div>
-
-		<div>
-			<label className="block mt-4 text-sm font-medium text-gray-700">
-				Number of Votes for 15 tokens:
-			</label>
-			<input
-				type="range"
-				min="0"
-				max="7"
-				value={Number(totalVotesForToken15)}
-				readOnly
-				className="mt-1 w-full"
-			/>
-			<p className="text-gray-600 text-center">{totalVotesForToken15.toString()}</p>
-		</div>
-
-        <label className="block mt-4 text-sm font-medium text-gray-700">Number of Tokens to Vote:</label>
-        <select
-          value={tokensWorth}
-          onChange={(e) => setTokensWorth(e.target.value)}
-          className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-        >
-          <option value="5">5 tokens</option>
-          <option value="10">10 tokens</option>
-          <option value="15">15 tokens</option>
-        </select>
-  
-		<button
-			onClick={handleVote}
-			className={`mt-4 p-2 rounded-md cursor-pointer ${
-			hasVoted ? 'bg-gray-400 text-gray-700' : 'bg-blue-500 text-white hover:bg-blue-600'
-			}`}
-			disabled={hasVoted}
-		>
-			{hasVoted ? 'Voted' : 'Vote'}
-		</button>
-      </div>
     </div>
   );
 };
