@@ -11,6 +11,7 @@
     const ClaimToken = () => {
         const [enrolledAndPassedEvents, setEnrolledAndPassedEvents] = useState([]);
         const [signerAddress, setSignerAddress] = useState('');
+        const [activeTab, setActiveTab] = useState('claimable');
 
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
@@ -94,67 +95,53 @@
         }, []);
         
         const claimedEvents = enrolledAndPassedEvents.filter(event => event.claimed);
-        const pendingClaimEvents = enrolledAndPassedEvents.filter(event => !event.claimed);    
-        
+        const pendingClaimEvents = enrolledAndPassedEvents.filter(event => !event.claimed);
+    
+        // Helper function to render the event cards, as you had it but now it's inside the component.
+        const renderEventCards = (events) => {
+            return events.map((event, index) => (
+                <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
+                    <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 sm:h-72 object-cover" />
+                    <div className="flex-1 p-4 flex flex-col justify-between">
+                        <div>
+                            <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
+                            <p className="mt-1 text-gray-600">Name: {event.name}</p>
+                            <p className="mt-1 text-gray-600">Time: {new Date(event.time * 1000).toLocaleString()}</p>
+                            <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
+                            <p className="mt-1 text-gray-600">Description: {event.description}</p>
+                            <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens}</p>
+                        </div>
+                        {!event.claimed && (
+                            <Link
+                                to={`/attendance/${event.eventId}`}
+                                className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center"
+                            >
+                                Claim Tokens
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            ));
+        };
+    
         return (
             <div>
                 <Navbar signerAddress={signerAddress} />
-                <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">Attended Events List</h3>
+                <div className="bg-gray-100 py-4 shadow">
+                    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Attended Events List</h3>
+                        <div className="flex justify-center space-x-4 border-b border-gray-300">
+                            <div className="flex space-x-2">
+                                <button onClick={() => setActiveTab('claimable')} className={`px-4 py-2 uppercase font-semibold ${activeTab === 'claimable' ? 'text-blue-600 border-b-2 border-blue-600' : 'hover:text-blue-500'}`}>Claimable Events</button>
+                                <button onClick={() => setActiveTab('claimed')} className={`px-4 py-2 uppercase font-semibold ${activeTab === 'claimed' ? 'text-blue-600 border-b-2 border-blue-600' : 'hover:text-blue-500'}`}>Claimed Events</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-        
-                    <div className="collapsible-container mt-4">
-                        <Collapsible trigger={<div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4">Claimable Events</div>} transitionTime={200}>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-                                {pendingClaimEvents.map((event, index) => (
-                                    <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                                        <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 sm:h-72 object-cover" />
-                                        <div className="flex-1 p-4 flex flex-col justify-between">
-                                        <div>
-                                            <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-                                            <p className="mt-1 text-gray-600">Name: {event.name}</p>
-                                            <p className="mt-1 text-gray-600">Time: {new Date(event.time * 1000).toLocaleString()}</p>
-                                            <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-                                            <p className="mt-1 text-gray-600">Description: {event.description}</p>
-                                            <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens === 0 ? 5 : event.finalTokens}</p>
-                                        </div>
-                                        <Link
-                                            to={`/attendance/${event.eventId}`}
-                                            className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center"
-                                        >
-                                            Claim Tokens
-                                        </Link>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </Collapsible>
-                    </div>
-        
-                    <div className="collapsible-container mt-4">
-                        <Collapsible trigger={<div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4">Claimed Events</div>} transitionTime={200}>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-                                {claimedEvents.map((event, index) => (
-                                    <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                                        <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 sm:h-72 object-cover" />
-                                        <div className="flex-1 p-4 flex flex-col justify-between">
-                                            <div>
-                                                <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-                                                <p className="mt-1 text-gray-600">Name: {event.name}</p>
-                                                <p className="mt-1 text-gray-600">Time: {new Date(event.time * 1000).toLocaleString()}</p>
-                                                <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-                                                <p className="mt-1 text-gray-600">Description: {event.description}</p>
-                                                <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens === 0 ? 5 : event.finalTokens}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </Collapsible>
-                    </div>
                 </div>
             </div>
         );
     };
-
+    
     export default ClaimToken;
