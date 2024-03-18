@@ -3,18 +3,18 @@ import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Collapsible from 'react-collapsible';
-import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
-import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
-import { questionnaireContractAddress, questionnaireContractABI } from '../Address&Abi/QuestionnaireContract'
+import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract';
+import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract';
+import { questionnaireContractAddress, questionnaireContractABI } from '../Address&Abi/QuestionnaireContract';
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
-
 
 const CreatedList = () => {
     const [createdEvents, setCreatedEvents] = useState([]); 
     const [dueOrVotedEvents, setDueOrVotedEvents] = useState([]);
     const [questionnaireStatus, setQuestionnaireStatus] = useState({});
-	const [signerAddress, setSignerAddress] = useState('');
+    const [signerAddress, setSignerAddress] = useState('');
+    const [activeTab, setActiveTab] = useState('pending');
   
     const signer = provider.getSigner();
     const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
@@ -22,19 +22,19 @@ const CreatedList = () => {
     const questionnaireContract = new ethers.Contract(questionnaireContractAddress, questionnaireContractABI, signer);
 
     useEffect(() => {
-      fetchCreatedEvents();
+        fetchCreatedEvents();
 
-	  async function fetchSignerAddress() {
-		try {
-		  const signer = provider.getSigner();
-		  const address = await signer.getAddress();
-		  setSignerAddress(address);
-		} catch (error) {
-		  console.error('Error fetching signer address:', error);
-		}
-	  }
-  
-	  fetchSignerAddress();
+        async function fetchSignerAddress() {
+            try {
+                const signer = provider.getSigner();
+                const address = await signer.getAddress();
+                setSignerAddress(address);
+            } catch (error) {
+                console.error('Error fetching signer address:', error);
+            }
+        }
+
+        fetchSignerAddress();
     }, []);
     
     const fetchCreatedEvents = async () => {
@@ -54,142 +54,72 @@ const CreatedList = () => {
     
             const questionnaireStatuses = await Promise.all(
                 eventsCreatedByCurrentUser.map(async (event) => {
-                    const exists = await questionnaireContract.questionnaireExists(event.eventId);
-                    return { eventId: event.eventId, exists };
+                    const hasQuestionnaire = await questionnaireContract.hasQuestionnaire(event.eventId);
+                    return hasQuestionnaire;
                 })
             );
     
-            const statusMap = {};
-            questionnaireStatuses.forEach(status => {
-                statusMap[status.eventId] = status.exists;
-            });
-    
-            setQuestionnaireStatus(statusMap);
-    
-            const eventsWithVotes = await Promise.all(
+            const eventsWithDetails = await Promise.all(
                 eventsCreatedByCurrentUser.map(async (event) => {
-                    const totalVotes = await votingContract.getTotalVotesForEvent(event.eventId);
                     const remainingTime = await votingContract.getRemainingTime(event.eventId);
-                    const userHasVoted = totalVotes > 0 || remainingTime <= 0;
-                    return { ...event, remainingTime: remainingTime.toString(), hasVoted: userHasVoted, totalVotes };
+                    const totalVotes = await votingContract.getTotalVotesForEvent(event.eventId);
+                    const finalTokens = await votingContract.getEventFinalTokens(event.eventId);
+                    const questionnairStatus = questionnaireStatuses[event.eventId];
+    
+                    return {
+                        eventId: event.eventId,
+                        name: event.name,
+                        time: event.time,
+                        venue: event.venue,
+                        ipfsHash: event.ipfsHash,
+                        description: event.description,
+                        remainingTime: remainingTime.toNumber(),
+                        totalVotes: totalVotes.toNumber(),
+                        finalTokens: finalTokens.toNumber(),
+                        hasQuestionnaire: questionnairStatus,
+                    };
                 })
             );
     
-            setCreatedEvents(eventsWithVotes);
-            setDueOrVotedEvents(eventsWithVotes.filter(event => !questionnaireStatus[event.eventId]));
-    
+            setCreatedEvents(eventsWithDetails);
+            setQuestionnaireStatus(questionnaireStatuses);
         } catch (error) {
             console.error('Error fetching created events:', error);
         }
     };
 
-	const currentTime = new Date().getTime();
-
-	const pendingEvents = createdEvents.filter(event => {
-		return (
-			dueOrVotedEvents.includes(event) &&
-			event.time.mul(1000).toNumber() > currentTime &&
-			!questionnaireStatus[event.eventId]
-		);
-	});
-
-	const createdEventsList = createdEvents.filter(event => {
-		return (
-			dueOrVotedEvents.includes(event) &&
-			event.time.mul(1000).toNumber() > currentTime &&
-			questionnaireStatus[event.eventId]
-		);
-	});
-	
-	const pastEvents = createdEvents.filter(event => {
-		return (
-			event.time.mul(1000).toNumber() < currentTime
-		);
-	});
-	
-    
-	return (
+    return (
         <div>
             <Navbar signerAddress={signerAddress} />
-            <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">Created Events List</h3>
+            <div className="bg-gray-100 py-4 shadow">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Created Event List</h3>
+                    <div className="flex justify-center space-x-4 border-b border-gray-300">
+                        <button
+                            onClick={() => setActiveTab('pending')}
+                            className={`px-4 py-2 font-semibold uppercase ${activeTab === 'pending' ? 'text-blue-600 border-b-2 border-blue-600' : 'hover:text-blue-500'}`}
+                        >
+                            PENDING EVENTS
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('created')}
+                            className={`px-4 py-2 font-semibold uppercase ${activeTab === 'created' ? 'text-blue-600 border-b-2 border-blue-600' : 'hover:text-blue-500'}`}
+                        >
+                            CREATED EVENTS
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('past')}
+                            className={`px-4 py-2 font-semibold uppercase ${activeTab === 'past' ? 'text-blue-600 border-b-2 border-blue-600' : 'hover:text-blue-500'}`}
+                        >
+                            PAST EVENTS
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="collapsible-container">
-                    <Collapsible trigger={<div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4">Pending Events</div>} transitionTime={200}>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-                            {pendingEvents.map((event, index) => (
-                                <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                                    <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 sm:h-72 object-cover" />
-                                    <div className="flex-1 p-4 flex flex-col justify-between">
-                                        <div>
-                                            <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-                                            <p className="mt-1 text-gray-600">Name: {event.name}</p>
-                                            <p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
-                                            <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-                                            <p className="mt-1 text-gray-600">Description: {event.description}</p>
-                                        </div>
-										<Link
-											to={`/questionnaire/${event.eventId}`}
-											className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center"
-										>
-											Create Questionnaire
-										</Link>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </Collapsible>
-                </div>
-
-                <div className="collapsible-container mt-4">
-                    <Collapsible trigger={<div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4">Created Events</div>} transitionTime={200}>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-                            {createdEventsList.map((event, index) => (
-                                <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                                    <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 sm:h-72 object-cover" />
-                                    <div className="flex-1 p-4 flex flex-col justify-between">
-                                        <div>
-                                            <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-                                            <p className="mt-1 text-gray-600">Name: {event.name}</p>
-                                            <p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
-                                            <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-                                            <p className="mt-1 text-gray-600">Description: {event.description}</p>
-                                        </div>
-                                        <Link
-											to={`/editquestionnaire/${event.eventId}`}
-											className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center"
-										>
-											Edit Questionnaire
-										</Link>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </Collapsible>
-                </div>
-
-				<div className="collapsible-container mt-4">
-                    <Collapsible trigger={<div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4">Past Events</div>} transitionTime={200}>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-                            {pastEvents.map((event, index) => (
-                                <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                                    <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 sm:h-72 object-cover" />
-                                    <div className="flex-1 p-4 flex flex-col justify-between">
-                                        <div>
-                                            <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-                                            <p className="mt-1 text-gray-600">Name: {event.name}</p>
-                                            <p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
-                                            <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-                                            <p className="mt-1 text-gray-600">Description: {event.description}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </Collapsible>
-                </div>
             </div>
         </div>
     );
-  };
-  
-  export default CreatedList;
+};
+
+export default CreatedList;
