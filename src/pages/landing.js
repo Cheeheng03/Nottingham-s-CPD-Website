@@ -21,7 +21,7 @@ const Landing = () => {
             </div>
             <div>
             <div className="font-mono text-2xl font-medium text-gray-900 text-center">
-                Please install MetaMask to continue.
+                Please install <a href="https://metamask.io/download/" target="_blank" rel="noopener noreferrer" className="text-orange-500 hover:underline">MetaMask</a> to continue.
             </div>
             </div>
         </div>
