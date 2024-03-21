@@ -1,27 +1,38 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 function Navbar({ signerAddress }) {
-  const showFullNavbar = signerAddress === '0x2Ffd02772a9A33D73aD16908dF16900AD1326f3E';
+  const location = useLocation();
+  const showFullNavbar = signerAddress === '0x98E71F9E374864f9D200EbAf0cDEd4A2552B8b45';
 
   return (
-    <nav className='bg-[#002D74] text-white p-4 flex justify-between items-center'>
-      <a href='/' className='text-2xl font-bold'>Nottingham s-CPD Events</a>
-      <ul className='flex space-x-4'>
-        <li><a href="/home" className='hover:underline'>Home</a></li>
-        <li><a href="/claimtoken" className='hover:underline'>Claim Tokens</a></li>
-        <li><a href="/studentevents" className='hover:underline'>Event Enrollment</a></li>
+    <nav className="bg-blue-900 text-white py-4 px-8 flex justify-between items-center">
+      <a href="/" className="text-3xl font-bold">Nottingham s-CPD Events</a>
+      <ul className="flex space-x-8 uppercase">
+        <NavItem path="/home" label="Home" isActive={location.pathname === '/home'} />
+        <NavItem path="/claimtoken" label="Claim Tokens" isActive={location.pathname === '/claimtoken'} />
+        <NavItem path="/studentevents" label="Event Enrollment" isActive={location.pathname === '/studentevents'} />
         {showFullNavbar && (
           <>
-            <li><a href="/eventcreation" className='hover:underline'>Event Creation</a></li>
-            <li><a href="/eventlist" className='hover:underline'>Event Voting</a></li>
-            <li><a href="/createdlist" className='hover:underline'>Questionnaire Creation</a></li>
+            <NavItem path="/eventcreation" label="Event Creation" isActive={location.pathname === '/eventcreation'} />
+            <NavItem path="/eventlist" label="Event Voting" isActive={location.pathname === '/eventlist'} />
+            <NavItem path="/createdlist" label="Questionnaire Creation" isActive={location.pathname === '/createdlist'} />
           </>
         )}  
-        <li><a href="/logout" className='hover:underline'>Logout</a></li>
+        <NavItem path="/logout" label="Logout" isActive={location.pathname === '/logout'} />
       </ul>
     </nav>
   );
 }
 
-export default Navbar;
+function NavItem({ path, label, isActive }) {
+  return (
+    <li>
+      <a href={path} className={`hover:underline ${isActive ? 'font-semibold text-yellow-400' : ''}`}>
+        {label}
+      </a>
+    </li>
+  );
+}
 
+export default Navbar;
