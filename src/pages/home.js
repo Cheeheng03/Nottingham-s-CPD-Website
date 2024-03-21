@@ -167,7 +167,7 @@ function Home() {
                                     <img 
                                         src={latest}
                                         alt="latest"
-                                        className="w-full h-80 md:h-[13rem] object-cover" 
+                                        className="w-full h-[10rem] lg:h-[13rem] xl:h-[18rem] object-cover" 
                                     />
                                 </div>
 
