@@ -5,10 +5,10 @@ import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { FiArrowLeft } from 'react-icons/fi';
 import emailjs from "@emailjs/browser";
+import loadinggif from '../Images/loading.gif';
 import { StudentInfoAddress, StudentInfoAbi } from '../Address&Abi/StudentRegistryContract';
 import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 const Enroll = () => {
     const { eventId } = useParams();
@@ -24,7 +24,8 @@ const Enroll = () => {
         time: '',
         description: ''
     });
-
+    
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
 	const StudentRegistryContract = new ethers.Contract(StudentInfoAddress, StudentInfoAbi, signer);
@@ -39,7 +40,6 @@ const Enroll = () => {
 				const studentInfo = await StudentRegistryContract.getStudentInfoByAddress(userAddress);
                 setEnrolled(isEnrolled);
                 
-                // Update emailParams with fetched event information
                 setEmailParams({
                     studentname: studentInfo[1],
                     email: studentInfo[2],
@@ -61,7 +61,6 @@ const Enroll = () => {
 
 		async function fetchSignerAddress() {
 			try {
-			  // Example: Fetching signer address from your provider
 			  const signer = provider.getSigner();
 			  const address = await signer.getAddress();
 			  setSignerAddress(address);
@@ -108,11 +107,11 @@ const Enroll = () => {
         <div className="relative">
             <Navbar signerAddress={signerAddress} />
             {loading && (
-					<div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-						<div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
-						<p className="text-white ml-3">Please wait for the transaction to be successful...</p>
-					</div>
-    		)}
+                <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+                    <img src={loadinggif} alt="Loading..." className="h-28" />
+                    <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+                </div>
+            )}
             <div className="flex items-center">
                 <Link
                     to="/studentevents"
@@ -122,15 +121,14 @@ const Enroll = () => {
                     Back to Event List
                 </Link>
             </div>
-
-            <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">
+            <h3 className="text-2xl lg:text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">
                 {event.name}
             </h3>
             <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
                 <img
                     src={`${event.ipfsHash}`}
                     alt={event.name}
-                    className="w-full h-96 object-cover mb-4 rounded-lg"
+                    className="w-full h-60 lg:h-96 object-cover mb-4 rounded-lg"
                 />
                 <p className="text-lg font-semibold text-gray-800">
                     Event ID: {event.eventId.toString()}

@@ -2,75 +2,244 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
-
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-const fetchEvents = async () => {
-    return [
-        { title: "Celebrating Women in STEM", date: "2023-12-01", time: "18:00", location: "Grand Hall", poster: "images/women.jpg" },
-        { title: "Women in STEM", date: "2023-12-05", time: "10:00", location: "F3C04", poster: "images/women_in_stem.jpg" },
-        { title: "Women in STEM", date: "2023-12-10", time: "14:00", location: "F1A15", poster: "images/women_in_stem.jpg" },
-        { title: "Women in STEM", date: "2023-12-12", time: "16:00", location: "TCR", poster: "images/women_in_stem.jpg" },
-    ];
-};
+import enrollgif from '../Images/enroll.gif';
+import eth from '../Images/eth.gif';
+import latest from '../Images/latest.gif';
+import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
+import { NOTTAddress, NOTTABI } from '../Address&Abi/NottinghamCoinContract';
+import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract';
+import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 
 function Home() {
-    const [events, setEvents] = useState([]);
     const [signerAddress, setSignerAddress] = useState('');
+    const [enrolledEventsLength, setEnrolledEventsLength] = useState(0);
+    const [attendedEventsLength, setAttendedEventsLength] = useState(0);
+    const [finalTokensNumber, setFinalTokensNumber] = useState(0);
+    const [latestEvent, setOpenEvents] = useState([]);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
 
     useEffect(() => {
-        fetchEvents().then(data => {
-            setEvents(data);
-        });
-
         async function fetchSignerAddress() {
             try {
-              const signer = provider.getSigner();
-              const address = await signer.getAddress();
-              setSignerAddress(address);
+                const signer = provider.getSigner();
+                const address = await signer.getAddress();
+                setSignerAddress(address);
             } catch (error) {
-              console.error('Error fetching signer address:', error);
+                console.error('Error fetching signer address:', error);
             }
           }
       
         fetchSignerAddress();
+
+        async function fetchData() {
+            try {
+                const signer = provider.getSigner();
+                const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
+                const NOTTContract = new ethers.Contract(NOTTAddress, NOTTABI, signer);
+                const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
+
+                const events = await eventRegistryContract.getActiveEvents();
+                const eventsWithTokens = await Promise.all(
+                    events.map(async (event) => {
+                        const userHasEnrolled = await eventRegistryContract.hasEnrolled(event.eventId, signer.getAddress());
+                        const userhasAttended = await NOTTContract.hasTakenAttendance(event.eventId, signer.getAddress());
+                        const finalTokenAmount = await votingContract.getEventFinalTokens(event.eventId);
+                        const claimedPromise = NOTTContract.hasClaimed(event.eventId, signer.getAddress());
+                        return {
+                            hasEnrolled: userHasEnrolled,
+                            hasAttended: userhasAttended,
+                            finalTokens: finalTokenAmount.toNumber() === 0 ? 5 : finalTokenAmount.toNumber(),
+                            claimed: claimedPromise,
+                        };
+                    })
+                );
+                const enrolledEvents = eventsWithTokens.filter(event => event.hasEnrolled);
+                const attendedEvents = enrolledEvents.filter(event => event.hasAttended);
+                const totalClaimedTokens = attendedEvents.reduce((total, event) => {
+                    if (event.claimed) {
+                        return total + event.finalTokens;
+                    }
+                    return total;
+                }, 0);
+                setFinalTokensNumber(totalClaimedTokens);
+                setEnrolledEventsLength(enrolledEvents.length);
+                setAttendedEventsLength(attendedEvents.length);
+            } catch (error) {
+                console.error('Error fetching events:', error);
+            }
+        }
+    
+        fetchData();
+
+        async function fetchOpenEvents() {
+            try {
+                const signer = provider.getSigner();
+                const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
+                const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
+        
+                const events = await eventRegistryContract.getActiveEvents();
+                const openEventsDetails = await Promise.all(
+                    events.map(async (event) => {
+                        const userHasEnrolled = await eventRegistryContract.hasEnrolled(event.eventId, signer.getAddress());
+                        const finalTokens = await votingContract.getEventFinalTokens(event.eventId);
+                        const currentTime = new Date().getTime();
+                        const eventTime = event.time * 1000;
+                        let status = '';
+                        if (currentTime < eventTime) {
+                            status = 'Active';
+                        } else {
+                            status = 'Past';
+                        }
+                        if (!userHasEnrolled && status === 'Active') {
+                            return {
+                                eventId: event.eventId,
+                                name: event.name,
+                                time: event.time,
+                                venue: event.venue,
+                                ipfsHash: event.ipfsHash,
+                                description: event.description,
+                                finalTokens: finalTokens.toNumber(),
+                                status: status
+                            };
+                        }
+                        return null;
+                    })
+                );
+        
+                const filteredOpenEventsDetails = openEventsDetails.filter(event => event !== null);
+        
+                setOpenEvents(filteredOpenEventsDetails);
+            } catch (error) {
+                console.error('Error fetching open events:', error);
+            }
+        }
+
+        fetchOpenEvents();
     }, []);
+
+    const chartData = [
+        { name: 'Attended Events', value: attendedEventsLength },
+        { name: 'Enrolled Events', value: enrolledEventsLength },
+    ];
 
     return (
         <div>
             <Navbar signerAddress={signerAddress} />
-            <div className="container mx-auto mt-12">
-                {/* Major Event Section */}
-                {events.length > 0 && (
-                 <div className="block bg-white rounded-xl overflow-hidden shadow-lg mb-8">
-                    <img src={events[0].poster} alt={events[0].title} className="w-full object-cover h-60" />
-                        <div className="p-4">
-                            <h2 className="font-bold text-2xl text-[#002D74] mb-2">Featured Event: {events[0].title}</h2>
-                            <p className="text-gray-700 text-base">Date: {events[0].date}</p>
-                            <p className="text-gray-700 text-base">Time: {events[0].time}</p>
-                            <p className="text-gray-700 text-base">Location: {events[0].location}</p>
-                        </div>
-                 </div>
-            )}
+            <h3 className="text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Dashboard</h3>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+                <div className="flex flex-col lg:flex-row lg:space-x-4">
+    
+                <div className="lg:w-1/3 bg-[#3840b7] rounded-xl shadow-lg mb-4 flex">
+                    <div className="flex-grow flex items-center justify-center w-full lg:h-64">
+                        <PieChart width={300} height={300} className="w-full h-full mb-4">
+                            <Pie
+                                data={chartData}
+                                cx={150}
+                                cy={150}
+                                innerRadius={60}
+                                outerRadius={100}
+                                fill="#8884d8"
+                                paddingAngle={5}
+                                dataKey="value"
+                                label={false}
+                            >
+                                {chartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={index === 0 ? '#82ca9d' : '#d884ce'} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend
+                                align="center"
+                                verticalAlign="bottom"
+                                wrapperStyle={{ color: '#fff', fontSize: '14px' }}
+                                contentStyle={{ color: '#fff' }}
+                                className="sm:text-xs mb-2"
+                            />
+                        </PieChart>
+                    </div>
+                </div>
 
-            {/* Ongoing Events List */}
-            <h1 className="font-bold text-3xl text-[#002D74] mb-6">Ongoing Events</h1>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {events.slice(1).map(event => (
-                        <div key={event.title} className="block bg-white rounded-xl shadow-lg overflow-hidden">
-                            <img src={event.poster} alt={event.title} className="w-full object-cover h-40" />
-                            <div className="p-4">
-                                <h3 className="font-bold text-xl mb-2">{event.title}</h3>
-                                <p className="text-gray-700 text-base">Date: {event.date}</p>
-                                <p className="text-gray-700 text-base">Time: {event.time}</p>
-                                <p className="text-gray-700 text-base">Location: {event.location}</p>
+                <div className="bg-white rounded-xl shadow-lg mb-4 flex flex-col lg:flex-row w-full h-80">
+                    <div className="flex-grow flex flex-col sm:flex-row p-0">
+                        
+                            <div className="flex-1 flex flex-col sm:flex-row">
+                                <div className="flex-none w-full hidden lg:flex sm:w-1/2 overflow-hidden rounded-l-xl items-center justify-center">
+                                    <img 
+                                        src={latest}
+                                        alt="latest"
+                                        className="w-full h-80 md:h-[13rem] object-cover" 
+                                    />
+                                </div>
+
+                                <div className='flex-1 p-4 rounded-t-xl rounded-b-xl lg:rounded-r-xl lg:rounded-l-none items-center justify-center' style={{ background: 'linear-gradient(to right, #0b287b, #0e2b7d, #172f84, #23378c, #2e3b8f, #394094, #404294, #4a4597, #544898, #5e4b9c, #694f9d, #7453a0, #7f56a1, #8559a3)', color: 'white', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                {latestEvent.length > 0 ? (
+                                    <>
+                                    <h3 className="font-mono text-4xl xl:text-5xl font-semibold mb-10 mt-10">Latest Event:</h3>
+                                    <p className="text-center">Name: {latestEvent[0].name}</p>
+                                    <p className="mt-1 text-center lg:text-left">Time: {new Date(latestEvent[0].time * 1000).toLocaleString()}</p>
+                                    <p className="mt-1 text-center">Tokens Rewarded: {latestEvent[0].finalTokens}</p>
+                                    <a href={`/enroll/${latestEvent[0].eventId}`} className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-600 flex items-center justify-center w-full lg:w-1/3">
+                                        View
+                                    </a>
+                                    </>
+                                ) : (
+                                    <>
+                                    <h3 className="font-mono text-4xl xl:text-5xl mb-10 mt-10">Check out our latest events now!</h3>
+                                    <a href="/studentevents" className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-600 flex items-center justify-center w-full lg:w-1/3">
+                                        Go
+                                    </a>
+                                    </>
+                                )}
+                                </div>
+
+                            </div>                      
+                    </div>
+                </div>
+
+            </div>
+    
+                <div className="flex flex-col lg:flex-row lg:space-x-4">
+                    <div className="lg:w-1/2 bg-white rounded-xl shadow-lg mb-4">
+                        <div className="flex-grow h-52 lg:h-[20rem]">
+                            <img src={enrollgif} alt="Enroll" className="w-full h-full object-cover rounded-t-xl" />
+                        </div>
+                        <Link to="/studentevents" className="block">
+                            <div 
+                                className="flex items-center justify-center lg:justify-between p-2 lg:p-4 bg-[#0b287b] rounded-b-xl cursor-pointer"
+                                style={{ 
+                                    minHeight: '4rem',
+                                    transition: 'all 0.5s ease-in-out',
+                                    backgroundSize: '200% 200%',
+                                    backgroundImage: 'linear-gradient(to left, #0b287b, #162b88, #1e2f95, #2633a2, #2e37af, #3840b7, #4249bf, #4b52c7, #5762d2, #6372dd, #6f82e8, #7b92f3)',
+                                }}
+                                onMouseOver={e => e.currentTarget.style.backgroundPosition = 'right bottom'}
+                                onMouseOut={e => e.currentTarget.style.backgroundPosition = 'left top'}
+                            >
+                                <h3 className="text-m lg:text-3xl font-semibold text-white flex-grow">
+                                    Click me to join an event now!
+                                </h3>
+                            </div>
+                        </Link>
+                    </div>
+    
+                    <Link to="/studentevents" className="lg:w-1/2 rounded-xl shadow-lg mb-4 overflow-hidden" style={{ background: 'linear-gradient(to top, #212465, #4971df)' }}>
+                        <div className="flex flex-col justify-between h-full" style={{ minHeight: '20rem', maxHeight: '32rem' }}>
+                            <div className="flex-grow flex justify-center items-center">
+                                <img src={eth} alt="Ethereum" className="object-contain h-64 max-w-full px-4" />
+                            </div>
+                            <div className="text-white text-center py-4">
+                                <p className="text-m lg:text-3xl font-semibold text-white flex-grow mb-4">
+                                    Nottingham Tokens Claimed: {finalTokensNumber} NOTT
+                                </p>
                             </div>
                         </div>
-                ))}
+                    </Link>
+
                 </div>
             </div>
         </div>
     );
+    
 }
 
 export default Home;

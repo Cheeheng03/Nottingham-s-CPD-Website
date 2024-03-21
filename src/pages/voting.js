@@ -4,10 +4,10 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { FiArrowLeft } from 'react-icons/fi';
+import loadinggif from '../Images/loading.gif';
 import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
 import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
 
-const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 const VotePage = () => {
     const { eventId } = useParams();
@@ -23,6 +23,7 @@ const VotePage = () => {
 	const [totalVotesForToken15, setTotalVotesForToken15] = useState(0);
 	const [signerAddress, setSignerAddress] = useState('');
 	const [loading, setLoading] = useState(false); 
+	const provider = new ethers.providers.Web3Provider(window.ethereum);
 
     useEffect(() => {
 		const initializePage = async () => {
@@ -30,7 +31,6 @@ const VotePage = () => {
 			await fetchRemainingTime();
 			await fetchVotesForTokens();
 	
-			// Check if the user has already voted on page load
 			const userHasVoted = await getVotesForTokenFromBlockchain(eventId, tokensWorth) > 0;
 			setHasVoted(userHasVoted);
 
@@ -38,12 +38,10 @@ const VotePage = () => {
 		fetchSignerAddress();
 		initializePage();
 	
-		// Set up interval to update remaining time every second
 		const intervalId = setInterval(() => {
 			updateRemainingTime();
 		}, 1000);
 	
-		// Clear the interval when the component is unmounted
 		return () => clearInterval(intervalId);
 
 		async function fetchSignerAddress() {
@@ -136,7 +134,6 @@ const VotePage = () => {
       const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
   
       try {
-        // Pass the eventId and the signer's address (voter's Ethereum address)
         const votes = await votingContract.getVotesForToken(eventId, await signer.getAddress());
         return votes;
       } catch (error) {
@@ -150,7 +147,6 @@ const VotePage = () => {
 		const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
 	
 		try {
-			// Pass the eventId and the tokens value to get total votes for the specific token
 			const totalVotes = await votingContract.tokenTotalVotes(eventId, tokens);
 			return totalVotes;
 		} catch (error) {
@@ -159,25 +155,19 @@ const VotePage = () => {
 		}
 	};
 	  
-	  // Add the handleVote function
 	  const handleVote = async () => {
 		try {
 		  const signer = provider.getSigner();
 		  const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
 	  
-		  // Check if the user has already voted
 		  const userHasVoted = await getVotesForTokenFromBlockchain(eventId, tokensWorth) > 0;
 	  
 		  if (!userHasVoted) {
 			setLoading(true);
-			// Call the contract function to record the vote
 			const transaction = await votingContract.vote(eventId, tokensWorth);
             await transaction.wait();
 			setLoading(false);
-			// Set hasVoted to true to prevent multiple votes
 			setHasVoted(true);
-	  
-			// Fetch updated votes after voting
 			fetchVotesForTokens();
 	  
 			const totalVotes = await getTotalVotesForTokenFromBlockchain(eventId, tokensWorth);
@@ -189,7 +179,6 @@ const VotePage = () => {
 			  setTotalVotesForToken15(totalVotes);
 			}
 	  
-			// Log or perform other actions based on the user's address or information
 			console.log(`User at address ${await signer.getAddress()} has cast a vote for Event ID ${eventId}`);
 
 		  } else {
@@ -210,11 +199,12 @@ const VotePage = () => {
     <div className="relative">
 		<Navbar signerAddress={signerAddress} />
 		{loading && (
-					<div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-						<div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
-						<p className="text-white ml-3">Please wait for the transaction to be successful...</p>
-					</div>
-    	)}
+			<div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+				<img src={loadinggif} alt="Loading..." className="h-28" />
+				<p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+			</div>
+		)}
+
 		<div className="flex items-center">
 			<Link to="/eventlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
 			<FiArrowLeft className="h-5 w-5 mr-1" />
@@ -222,9 +212,9 @@ const VotePage = () => {
 			</Link>
 		</div>
 	
-		<h3 className="text-2xl font-bold text-center text-gray-800 mb-8">Vote for {event.name}</h3>
+		<h3 className="text-2xl font-bold text-center text-[#0b287b] mb-8 mt-4">Vote for {event.name}</h3>
 		<div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
-			<img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-96 object-cover mb-4 rounded-lg" />
+			<img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-60 lg:h-96 object-cover mb-4 rounded-lg" />
 			<p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
 			<p className="mt-1 text-gray-600">Name: {event.name}</p>
 			<p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>

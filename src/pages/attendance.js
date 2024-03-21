@@ -3,15 +3,12 @@ import { ethers } from 'ethers';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { FiArrowLeft } from 'react-icons/fi';
+import loadinggif from '../Images/loading.gif';
 import { GoogleMap, Marker, Circle, useLoadScript } from '@react-google-maps/api';
 import { NOTTAddress, NOTTABI } from '../Address&Abi/NottinghamCoinContract'
 import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract';
 
 const libraries = ['places'];
-const mapContainerStyle = {
-  width: '50vw',
-  height: '50vh',
-};
 const initialCenter = {
   lat: 2.9438,
   lng: 101.8734,
@@ -149,7 +146,6 @@ const Attendance = () => {
         if (venueArea) {
             const distance = getDistanceFromLatLonInM(location.lat, location.lng, venueArea.center.lat, venueArea.center.lng);
             if (distance < venueArea.radius) {
-                console.log(`User is within the attendance area: ${venueArea.id}`);
                 setWithinAttendanceArea(true);
             } else {
                 setWithinAttendanceArea(false);
@@ -202,23 +198,24 @@ const Attendance = () => {
     if (!isLoaded) return <div>Loading maps</div>;
 
     return (
-        <div className="relative">
+        <div className="relative mb-2">
             <Navbar signerAddress={signerAddress} />
             {loading && (
                 <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
+                    <img src={loadinggif} alt="Loading..." className="h-28" />
                     <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
                 </div>
-    		)}
+            )}
             <div className="flex items-center">
                 <Link to="/claimtoken" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
                     <FiArrowLeft className="h-5 w-5 mr-1" /> Back to Attended Events
                 </Link>
             </div>
+            <h3 className="text-xl lg:text-4xl font-bold text-center text-[#0b287b] mt-4 mb-6">Please ensure that you mark your attendance before proceeding to claim tokens</h3>
             <div className="flex flex-col items-center justify-center">
-                <div style={mapContainerStyle}>
+                <div className="w-full h-[24rem] lg:h-[30rem] 2xl:h-[40rem] sm:w-full md:w-3/4 lg:w-2/3 mx-auto mt-4 rounded">
                     <GoogleMap
-                        mapContainerStyle={mapContainerStyle}
+                        mapContainerStyle={{ width: '100%', height: '100%' }}
                         zoom={17}
                         center={currentLocationRef.current}
                     >
@@ -238,6 +235,7 @@ const Attendance = () => {
                         )}
                     </GoogleMap>
                 </div>
+
                 <div className="mt-4 text-center">
                     <p>Time remaining to take attendance: {formatRemainingTime(timer)}</p>
                     {attendanceMarked || markingAttendance || isAttendanceDue ? (

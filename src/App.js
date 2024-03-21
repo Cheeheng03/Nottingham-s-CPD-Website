@@ -18,6 +18,7 @@ import EditQuestionnaire from './pages/editquestionnaire';
 import Enroll from './pages/enroll';
 import Claim from './pages/claim';
 import Attendance from './pages/attendance';
+import Landing from './pages/landing';
 
 function App() {
   return (
@@ -25,7 +26,8 @@ function App() {
       <div>
         <div className='component-container'>
           <Routes>
-            <Route path="/" element={<Connect />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/connect" element={<Connect />} />
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/claimtoken" element={<ClaimToken />} />

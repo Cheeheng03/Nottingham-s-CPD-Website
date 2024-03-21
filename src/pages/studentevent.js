@@ -1,19 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Collapsible from 'react-collapsible';
+import oops from '../Images/oops.gif'
+import { FaArrowAltCircleRight } from 'react-icons/fa';
 import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
 import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
-
-const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 const StudentEvents = () => {
     const [openEvents, setOpenEvents] = useState([]);
     const [enrolledEvents, setEnrolledEvents] = useState([]);
-    const [pastEvents, setPastEvents] = useState([]);
-    const [activeTab, setActiveTab] = useState('open');
-    const [signerAddress, setSignerAddress] = useState('');
+	const [pastEvents, setPastEvents] = useState([]);
+	const [signerAddress, setSignerAddress] = useState('');
+    const [isEnrollableEventsOpen, setIsEnrollableEventsOpen] = useState(true);
+    const [isEnrolledEventsOpen, setIsEnrolledEventsOpen] = useState(false);
+    const [isPastEventsOpen, setIsPastEventsOpen] = useState(false);
+    const enrollableEventsRef = useRef(null);
+    const enrolledEventsRef = useRef(null);
+    const pastEventsRef = useRef(null);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
 
+    
     useEffect(() => {
         async function fetchData() {
             try {
@@ -75,46 +83,182 @@ const StudentEvents = () => {
         fetchSignerAddress();
     }, []);
 
-    const renderEventCards = (events) => {
-        return events.map((event, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden flex flex-col">
-                <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 sm:h-72 object-cover" />
-                <div className="flex-1 p-4 flex flex-col justify-between">
-                    <div>
-                        <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-                        <p className="mt-1 text-gray-600">Name: {event.name}</p>
-                        <p className="mt-1 text-gray-600">Time: {new Date(event.time * 1000).toLocaleString()}</p>
-                        <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-                        <p className="mt-1 text-gray-600">Description: {event.description}</p>
-                        <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens}</p>
-                    </div>
-                    <Link
-                        to={`/enroll/${event.eventId}`}
-                        className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center"
-                    >
-                        View
-                    </Link>
-                </div>
-            </div>
-        ));
-    };
+    useEffect(() => {
+        function handleWheelScroll(event) {
+            const delta = Math.max(-1, Math.min(1, event.deltaY));
+            event.currentTarget.scrollLeft -= delta * 100;
+            event.preventDefault();
+        }
+
+        if (enrollableEventsRef.current) {
+            enrollableEventsRef.current.addEventListener('wheel', handleWheelScroll);
+        }
+        if (enrolledEventsRef.current) {
+            enrolledEventsRef.current.addEventListener('wheel', handleWheelScroll);
+        }
+        if (pastEventsRef.current) {
+            pastEventsRef.current.addEventListener('wheel', handleWheelScroll);
+        }
+
+        return () => {
+            if (enrollableEventsRef.current) {
+                enrollableEventsRef.current.removeEventListener('wheel', handleWheelScroll);
+            }
+            if (enrolledEventsRef.current) {
+                enrolledEventsRef.current.removeEventListener('wheel', handleWheelScroll);
+            }
+            if (pastEventsRef.current) {
+                pastEventsRef.current.removeEventListener('wheel', handleWheelScroll);
+            }
+        };
+    }, []);
 
     return (
         <div>
             <Navbar signerAddress={signerAddress} />
-            <div className="bg-gray-100 py-4 shadow">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">Student Events List</h3>
-                    <div className="flex justify-center space-x-4 border-b border-gray-300">
-                        <div className="flex space-x-2">
-                            <button onClick={() => setActiveTab('open')} className={`px-4 py-2 uppercase font-semibold ${activeTab === 'open' ? 'text-blue-600 border-b-2 border-blue-600' : 'hover:text-blue-500'}`}>Open for Enrollment</button>
-                            <button onClick={() => setActiveTab('enrolled')} className={`px-4 py-2 uppercase font-semibold ${activeTab === 'enrolled' ? 'text-blue-600 border-b-2 border-blue-600' : 'hover:text-blue-500'}`}>Enrolled</button>
-                            <button onClick={() => setActiveTab('past')} className={`px-4 py-2 uppercase font-semibold ${activeTab === 'past' ? 'text-blue-600 border-b-2 border-blue-600' : 'hover:text-blue-500'}`}>Past</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <h3 className="text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Event Enrollment</h3>
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+                <div className="collapsible-container mt-4">
+                    <Collapsible
+                        trigger={
+                            <div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4 flex justify-between items-center" onClick={() => setIsEnrollableEventsOpen(!isEnrollableEventsOpen)}>
+                                <span className='w-full'>Open Events</span>
+                                <div className={`transform transition-transform ${isEnrollableEventsOpen ? 'rotate-90' : 'rotate-0'}`}>
+                                    <FaArrowAltCircleRight size={24} />
+                                </div>
+                            </div>
+                        }
+                        open={isEnrollableEventsOpen}
+                        transitionTime={200}
+                    >
+                       <div className="flex flex-nowrap overflow-x-auto py-4" ref={enrollableEventsRef}>
+                            {openEvents.length === 0 ? (
+                                <div className="flex justify-center items-center h-full w-full">
+                                <div className="text-center">
+                                    <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
+                                    <p className="text-gray-600">Apologies, there are currently no events available for enrollment. Feel free to join our upcoming events!</p>
+                                </div>
+                            </div>
+                            
+                            
+                            ) : (
+                                openEvents.map((event, index) => (
+                                    <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
+                                        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full">
+                                            <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 object-cover" />
+                                            <div className="p-4">
+                                                <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
+                                                <p className="mt-1 text-gray-600">Name: {event.name}</p>
+                                                <p className="mt-1 text-gray-600">Time: {new Date(event.time * 1000).toLocaleString()}</p>
+                                                <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
+                                                <p className="mt-1 text-gray-600">Description: {event.description}</p>
+                                                <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens === 0 ? 5 : event.finalTokens}</p>
+                                                <Link to={`/enroll/${event.eventId}`} className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center block">Enroll</Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                    </Collapsible>
+                </div>
+
+                <div className="collapsible-container mt-4">
+                    <Collapsible
+                        trigger={
+                            <div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4 flex justify-between items-center" onClick={() => setIsEnrolledEventsOpen(!isEnrolledEventsOpen)}>
+                                <span className='w-full'>Enrolled Events</span>
+                                <div className={`transform transition-transform ${isEnrolledEventsOpen ? 'rotate-90' : 'rotate-0'}`}>
+                                    <FaArrowAltCircleRight size={24} />
+                                </div>
+                            </div>
+                        }
+                        open={isEnrolledEventsOpen}
+                        transitionTime={200}
+                    >
+                       <div className="flex flex-nowrap overflow-x-auto py-4" ref={enrolledEventsRef}>
+                            {enrolledEvents.length === 0 ? (
+                                <div className="flex justify-center items-center h-full w-full">
+                                <div className="text-center">
+                                    <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
+                                    <p className="text-gray-600">Apologies, there are currently no events enrolled. Feel free to join our events!</p>
+                                </div>
+                            </div>
+                            
+                            
+                            ) : (
+                                enrolledEvents.map((event, index) => (
+                                    <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
+                                        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full flex flex-col">
+                                            <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 object-cover" />
+                                            <div className="flex-1 p-4 flex flex-col justify-between">
+                                                <div>
+                                                    <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
+                                                    <p className="mt-1 text-gray-600">Name: {event.name}</p>
+                                                    <p className="mt-1 text-gray-600">Time: {new Date(event.time * 1000).toLocaleString()}</p>
+                                                    <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
+                                                    <p className="mt-1 text-gray-600">Description: {event.description}</p>
+                                                    <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens === 0 ? 5 : event.finalTokens}</p>
+                                                </div>
+                                                <Link to={`/enroll/${event.eventId}`} className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center block">
+                                                    View
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </Collapsible>
+                </div>
+
+                <div className="collapsible-container mt-4">
+                    <Collapsible
+                        trigger={
+                            <div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4 flex justify-between items-center" onClick={() => setIsPastEventsOpen(!isPastEventsOpen)}>
+                                <span className='w-full'>Past Events</span>
+                                <div className={`transform transition-transform ${isPastEventsOpen ? 'rotate-90' : 'rotate-0'}`}>
+                                    <FaArrowAltCircleRight size={24} />
+                                </div>
+                            </div>
+                        }
+                        open={isPastEventsOpen}
+                        transitionTime={200}
+                    >
+                       <div className="flex flex-nowrap overflow-x-auto py-4" ref={pastEventsRef}>
+                            {pastEvents.length === 0 ? (
+                                <div className="flex justify-center items-center h-full w-full">
+                                <div className="text-center">
+                                    <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
+                                    <p className="text-gray-600">Apologies, there are currently no past events. Feel free to join our events!</p>
+                                </div>
+                            </div>
+                            
+                            
+                            ) : (
+                                pastEvents.map((event, index) => (
+                                    <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
+                                        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full flex flex-col">
+                                            <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 object-cover" />
+                                            <div className="flex-1 p-4 flex flex-col justify-between">
+                                                <div>
+                                                <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
+                                                <p className="mt-1 text-gray-600">Name: {event.name}</p>
+                                                <p className="mt-1 text-gray-600">Time: {new Date(event.time * 1000).toLocaleString()}</p>
+                                                <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
+                                                <p className="mt-1 text-gray-600">Description: {event.description}</p>
+                                                <p className="mt-1 text-gray-600">Tokens Rewarded: {event.finalTokens === 0 ? 5 : event.finalTokens}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </Collapsible>
+                </div>
             </div>
         </div>
     );

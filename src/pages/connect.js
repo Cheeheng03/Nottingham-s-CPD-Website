@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
+import logo from '../Images/logo2.png'
 import { StudentInfoAddress, StudentInfoAbi } from '../Address&Abi/StudentRegistryContract';
 
 function Connect() {
@@ -76,7 +77,9 @@ function Connect() {
     return (
         <div className="bg-gray-50 min-h-screen flex items-center justify-center">
             <div className="bg-gray-100 rounded-2xl shadow-lg max-w-md mx-auto p-8">
-                <h2 className="font-bold text-2xl text-[#002D74] mb-6 text-center">Connect to MetaMask</h2>
+                <img src={logo} alt="Logo" className="h-32 mb-6 w-full" />
+                <h2 className="font-bold text-xl text-[#002D74] mb-6 text-center">Login to Nottingham s-CPD website</h2>
+                
                 {isMetaMaskConnected ? (
                     <button 
                         className="w-full bg-[#002D74] text-white font-bold py-2 px-4 rounded hover:bg-[#002D74]/90 focus:outline-none focus:shadow-outline mb-4" 

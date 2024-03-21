@@ -4,10 +4,9 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { FiArrowLeft } from 'react-icons/fi';
+import loadinggif from '../Images/loading.gif';
 import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
 import { questionnaireContractAddress, questionnaireContractABI } from '../Address&Abi/QuestionnaireContract'
-
-const provider = new ethers.providers.Web3Provider(window.ethereum);
   
 const CreateQuestionnaire = () => {
     const { eventId } = useParams();
@@ -26,6 +25,7 @@ const CreateQuestionnaire = () => {
     const [answer2B, setAnswer2B] = useState('');
     const [correctAnswer2, setCorrectAnswer2] = useState('');
 
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
 
@@ -106,34 +106,34 @@ const CreateQuestionnaire = () => {
         <div className="relative">
             <Navbar signerAddress={signerAddress} />
             {loading && (
-					<div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-						<div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
-						<p className="text-white ml-3">Please wait for the transaction to be successful...</p>
-					</div>
-    	    )}
+                <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+                    <img src={loadinggif} alt="Loading..." className="h-28" />
+                    <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+                </div>
+            )}
             <div className="flex items-center">
                 <Link to="/createdlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
                     <FiArrowLeft className="h-5 w-5 mr-1" />
                     Back to Created Event List
                 </Link>
             </div>
-            <h3 className="text-2xl font-bold text-center text-gray-800 mb-8">Create Questionnaire</h3>
+            <h3 className="text-2xl lg:text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Create Custom Questionnaire</h3>
             <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
-                <img src={`${eventDetails.ipfsHash}`} alt={eventDetails.name} className="w-full h-96 object-cover mb-4 rounded-lg" />
+                <img src={`${eventDetails.ipfsHash}`} alt={eventDetails.name} className="w-full h-60 lg:h-96 object-cover mb-4 rounded-lg" />
                 <p className="text-lg font-semibold text-gray-800">Event ID: {eventDetails.eventId}</p>
-                <p className="mt-1 text-gray-600">Name: {eventDetails.name}</p>
-                <p className="mt-1 text-gray-600">Token Reward: {eventDetails.finalTokens === 0 ? 5 : eventDetails.finalTokens}</p>
+                <p className="mt-1 text-gray-600">Event Name: {eventDetails.name}</p>
+                <p className="mt-1 text-gray-600">Tokens Rewarded: {eventDetails.finalTokens === 0 ? 5 : eventDetails.finalTokens}</p>
 
-                <form
+               <form
                     onSubmit={handleSubmit}
-                    className="max-w-md mx-auto p-6 bg-white rounded-md shadow-md"
+                    className="max-w-md mx-auto p-6 bg-white"
                 >
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="question1">
+                        <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="question1">
                             Question 1:
                         </label>
                         <input
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 border-b rounded-md focus:outline-none focus:border-blue-500 mb-3"
                             type="text"
                             id="question1"
                             placeholder="Enter Question 1"
@@ -141,21 +141,21 @@ const CreateQuestionnaire = () => {
                             onChange={(e) => setQuestion1(e.target.value)}
                         />
                         <input
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 border-b rounded-md focus:outline-none focus:border-blue-500 mb-3"
                             type="text"
                             placeholder="Enter Answer 1A"
                             value={answer1A}
                             onChange={(e) => setAnswer1A(e.target.value)}
                         />
                         <input
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 border-b rounded-md focus:outline-none focus:border-blue-500 mb-3"
                             type="text"
                             placeholder="Enter Answer 1B"
                             value={answer1B}
                             onChange={(e) => setAnswer1B(e.target.value)}
                         />
                         <select
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 border-b rounded-md focus:outline-none focus:border-blue-500 mb-3"
                             value={correctAnswer1}
                             onChange={(e) => setCorrectAnswer1(e.target.value)}
                         >
@@ -165,12 +165,13 @@ const CreateQuestionnaire = () => {
                         </select>
                     </div>
 
+
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="question2">
+                        <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="question2">
                             Question 2:
                         </label>
                         <input
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 border-b rounded-md focus:outline-none focus:border-blue-500 mb-3"
                             type="text"
                             id="question2"
                             placeholder="Enter Question 2"
@@ -178,21 +179,21 @@ const CreateQuestionnaire = () => {
                             onChange={(e) => setQuestion2(e.target.value)}
                         />
                         <input
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 border-b rounded-md focus:outline-none focus:border-blue-500 mb-3"
                             type="text"
                             placeholder="Enter Answer 2A"
                             value={answer2A}
                             onChange={(e) => setAnswer2A(e.target.value)}
                         />
                         <input
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 border-b rounded-md focus:outline-none focus:border-blue-500 mb-3"
                             type="text"
                             placeholder="Enter Answer 2B"
                             value={answer2B}
                             onChange={(e) => setAnswer2B(e.target.value)}
                         />
                         <select
-                            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
+                            className="w-full px-3 py-2 border-b rounded-md focus:outline-none focus:border-blue-500 mb-3"
                             value={correctAnswer2}
                             onChange={(e) => setCorrectAnswer2(e.target.value)}
                         >
