@@ -16,7 +16,6 @@ const initialCenter = {
 
 const Attendance = () => {
     const { eventId } = useParams();
-    const [event, setEvent] = useState(null);
     const [signerAddress, setSignerAddress] = useState('');
     const [venueArea, setVenueArea] = useState(null);
     const currentLocationRef = useRef(initialCenter);
@@ -47,20 +46,16 @@ const Attendance = () => {
                 console.error('Error checking attendance:', error);
             }
         };
-
+    
         if (eventId && signerAddress) {
             checkAttendanceTaken();
         }
-
+    
         async function fetchEventDetails() {
             try {
                 const eventData = await eventRegistryContract.getEvent(eventId);
-                setEvent({
-                    venue: eventData.venue,
-                    starttime: eventData.time,
-                });
                 fetchVenueRadius(eventData.venue);
-
+    
                 const eventStartTime = new Date(eventData.time * 1000);
                 const threeHoursLater = new Date(eventStartTime.getTime() + 3 * 60 * 60 * 1000);
                 const now = new Date();
@@ -71,11 +66,11 @@ const Attendance = () => {
                 console.error('Error fetching event details:', error);
             }
         }
-
-        if (eventId) {
+    
+        if (eventId && eventRegistryContract && signerAddress) {
             fetchEventDetails();
         }
-
+    
         async function fetchSignerAddress() {
             try {
                 const address = await signer.getAddress();
@@ -84,16 +79,27 @@ const Attendance = () => {
                 console.error('Error fetching signer address:', error);
             }
         }
-
+    
         fetchSignerAddress();
-
+    
+        const checkAttendanceArea = (location) => {
+            if (venueArea) {
+                const distance = getDistanceFromLatLonInM(location.lat, location.lng, venueArea.center.lat, venueArea.center.lng);
+                if (distance < venueArea.radius) {
+                    setWithinAttendanceArea(true);
+                } else {
+                    setWithinAttendanceArea(false);
+                }
+            }
+        };
+    
         const watchPosition = () => {
             const options = {
                 enableHighAccuracy: true,
                 timeout: 5000,
                 maximumAge: 0,
             };
-
+    
             const watcher = navigator.geolocation.watchPosition(
                 (position) => {
                     const newPos = {
@@ -106,14 +112,15 @@ const Attendance = () => {
                 (error) => {},
                 options
             );
-
+    
             return () => navigator.geolocation.clearWatch(watcher);
         };
-
+    
         watchPosition();
-
-    }, [eventId, signer, eventRegistryContract]);
-
+    
+    }, [eventId, NOTTContract, signerAddress, eventRegistryContract, signer]);
+    
+    
     useEffect(() => {
         const timer = setTimeout(() => {
             setIsInitialLoading(false);
@@ -139,17 +146,6 @@ const Attendance = () => {
             setVenueArea(area);
         } else {
             console.log("Venue not found, no specific attendance area set.");
-        }
-    };
-
-    const checkAttendanceArea = (location) => {
-        if (venueArea) {
-            const distance = getDistanceFromLatLonInM(location.lat, location.lng, venueArea.center.lat, venueArea.center.lng);
-            if (distance < venueArea.radius) {
-                setWithinAttendanceArea(true);
-            } else {
-                setWithinAttendanceArea(false);
-            }
         }
     };
 

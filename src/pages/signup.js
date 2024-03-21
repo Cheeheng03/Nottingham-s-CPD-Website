@@ -11,7 +11,6 @@ function Signup() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMatch, setPasswordMatch] = useState(true);
-  const [accountAddress, setAccountAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -20,12 +19,8 @@ function Signup() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       try {
         await provider.send('eth_requestAccounts', []);
-        const signer = await provider.getSigner();
-        const address = await signer.getAddress();
-        setAccountAddress(address);
       } catch (error) {
         console.error(error);
-        setAccountAddress('');
       }
     };
 

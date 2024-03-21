@@ -46,21 +46,21 @@ const CreateQuestionnaire = () => {
                 console.error('Error fetching event details:', error);
             }
         };
-
+    
         fetchEventDetails();
-
-		async function fetchSignerAddress() {
-			try {
-			  const signer = provider.getSigner();
-			  const address = await signer.getAddress();
-			  setSignerAddress(address);
-			} catch (error) {
-			  console.error('Error fetching signer address:', error);
-			}
-		  }
-	  
-		  fetchSignerAddress();
-    }, [eventId]);
+    
+        async function fetchSignerAddress() {
+            try {
+                const signer = provider.getSigner();
+                const address = await signer.getAddress();
+                setSignerAddress(address);
+            } catch (error) {
+                console.error('Error fetching signer address:', error);
+            }
+        }
+    
+        fetchSignerAddress();
+    }, [eventId, provider, votingContract]);    
 
     const handleSubmit = async (e) => {
         e.preventDefault();

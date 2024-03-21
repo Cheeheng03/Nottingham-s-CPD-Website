@@ -15,9 +15,6 @@ const VotePage = () => {
     const [tokensWorth, setTokensWorth] = useState(5);
     const [hasVoted, setHasVoted] = useState(false);
     const [remainingTime, setRemainingTime] = useState(0);
-    const [votesForToken5, setVotesForToken5] = useState(0);
-    const [votesForToken10, setVotesForToken10] = useState(0);
-    const [votesForToken15, setVotesForToken15] = useState(0);
 	const [totalVotesForToken5, setTotalVotesForToken5] = useState(0);
 	const [totalVotesForToken10, setTotalVotesForToken10] = useState(0);
 	const [totalVotesForToken15, setTotalVotesForToken15] = useState(0);
@@ -30,31 +27,32 @@ const VotePage = () => {
 			await fetchEvent();
 			await fetchRemainingTime();
 			await fetchVotesForTokens();
-	
+
 			const userHasVoted = await getVotesForTokenFromBlockchain(eventId, tokensWorth) > 0;
 			setHasVoted(userHasVoted);
-
 		};
+
+		const fetchSignerAddress = async () => {
+			try {
+				const signer = provider.getSigner();
+				const address = await signer.getAddress();
+				setSignerAddress(address);
+				console.log("signer:", address);
+			} catch (error) {
+				console.error('Error fetching signer address:', error);
+			}
+		};
+
 		fetchSignerAddress();
 		initializePage();
-	
+
 		const intervalId = setInterval(() => {
 			updateRemainingTime();
 		}, 1000);
-	
-		return () => clearInterval(intervalId);
 
-		async function fetchSignerAddress() {
-			try {
-			  const signer = provider.getSigner();
-			  const address = await signer.getAddress();
-			  setSignerAddress(address);
-			  console.log("signer:", address);
-			} catch (error) {
-			  console.error('Error fetching signer address:', error);
-			}
-		}
-	}, [eventId, tokensWorth]);
+		return () => clearInterval(intervalId);
+	}, [eventId, tokensWorth, fetchEvent, fetchRemainingTime, fetchVotesForTokens, getVotesForTokenFromBlockchain, provider]);
+
     const fetchEvent = async () => {
       try {
         const event = await getEventFromBlockchain(eventId);
@@ -81,14 +79,6 @@ const VotePage = () => {
   
     const fetchVotesForTokens = async () => {
 		try {
-			const votes5 = await getVotesForTokenFromBlockchain(eventId, 5);
-			const votes10 = await getVotesForTokenFromBlockchain(eventId, 10);
-			const votes15 = await getVotesForTokenFromBlockchain(eventId, 15);
-	
-			setVotesForToken5(votes5);
-			setVotesForToken10(votes10);
-			setVotesForToken15(votes15);
-	
 			const totalVotes5 = await getTotalVotesForTokenFromBlockchain(eventId, 5);
 			const totalVotes10 = await getTotalVotesForTokenFromBlockchain(eventId, 10);
 			const totalVotes15 = await getTotalVotesForTokenFromBlockchain(eventId, 15);

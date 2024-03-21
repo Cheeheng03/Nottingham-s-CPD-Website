@@ -67,9 +67,9 @@ const StudentEvents = () => {
                 console.error('Error fetching events:', error);
             }
         }
-
+    
         fetchData();
-
+    
         async function fetchSignerAddress() {
             try {
                 const signer = provider.getSigner();
@@ -79,39 +79,43 @@ const StudentEvents = () => {
                 console.error('Error fetching signer address:', error);
             }
         }
-
+    
         fetchSignerAddress();
-    }, []);
-
+    }, [provider]);
+    
     useEffect(() => {
         function handleWheelScroll(event) {
             const delta = Math.max(-1, Math.min(1, event.deltaY));
             event.currentTarget.scrollLeft -= delta * 100;
             event.preventDefault();
         }
-
-        if (enrollableEventsRef.current) {
-            enrollableEventsRef.current.addEventListener('wheel', handleWheelScroll);
+    
+        const enrollableEventsRefCurrent = enrollableEventsRef.current;
+        const enrolledEventsRefCurrent = enrolledEventsRef.current;
+        const pastEventsRefCurrent = pastEventsRef.current;
+    
+        if (enrollableEventsRefCurrent) {
+            enrollableEventsRefCurrent.addEventListener('wheel', handleWheelScroll);
         }
-        if (enrolledEventsRef.current) {
-            enrolledEventsRef.current.addEventListener('wheel', handleWheelScroll);
+        if (enrolledEventsRefCurrent) {
+            enrolledEventsRefCurrent.addEventListener('wheel', handleWheelScroll);
         }
-        if (pastEventsRef.current) {
-            pastEventsRef.current.addEventListener('wheel', handleWheelScroll);
+        if (pastEventsRefCurrent) {
+            pastEventsRefCurrent.addEventListener('wheel', handleWheelScroll);
         }
-
+    
         return () => {
-            if (enrollableEventsRef.current) {
-                enrollableEventsRef.current.removeEventListener('wheel', handleWheelScroll);
+            if (enrollableEventsRefCurrent) {
+                enrollableEventsRefCurrent.removeEventListener('wheel', handleWheelScroll);
             }
-            if (enrolledEventsRef.current) {
-                enrolledEventsRef.current.removeEventListener('wheel', handleWheelScroll);
+            if (enrolledEventsRefCurrent) {
+                enrolledEventsRefCurrent.removeEventListener('wheel', handleWheelScroll);
             }
-            if (pastEventsRef.current) {
-                pastEventsRef.current.removeEventListener('wheel', handleWheelScroll);
+            if (pastEventsRefCurrent) {
+                pastEventsRefCurrent.removeEventListener('wheel', handleWheelScroll);
             }
         };
-    }, []);
+    }, [enrollableEventsRef, enrolledEventsRef, pastEventsRef]);
 
     return (
         <div>

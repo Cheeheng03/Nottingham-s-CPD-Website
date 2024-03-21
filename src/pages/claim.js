@@ -29,58 +29,57 @@ const Claim = () => {
 	const NOTTContract = new ethers.Contract(NOTTAddress, NOTTABI, signer);
 
     useEffect(() => {
-		async function fetchEventDetails() {
-			try {
-				const eventData = await eventRegistryContract.getEvent(eventId);
-				const details = await votingContract.getEventDetailsWithFinalTokenAmount(eventId);
-				const eventDetails = {
-					eventId: eventData.eventId,
-					name: eventData.name,
-					time: eventData.time,
-					venue: eventData.venue,
-					ipfsHash: eventData.ipfsHash,
-					description: eventData.description,
-					finalTokens: details[5].toNumber(),
-				};
-				setEvent(eventDetails);
-	
-				const userAddress = await signer.getAddress();
-				const claimed = await NOTTContract.hasClaimed(eventId, userAddress);
-				setClaimSuccess(claimed);
-	
-				let fetchedQuestionnaire = null;
-				const questionnaireExists = await questionnaireContract.questionnaireExists(eventId);
-				if (questionnaireExists) {
-					fetchedQuestionnaire = await questionnaireContract.getQuestionnaire(eventId);
-				} else {
-					fetchedQuestionnaire = {
-						questions: ['Did you enjoy the event?', 'Did you gain something out of the event?'],
-						options: [['Yes', 'No'], ['Yes', 'No']],
-						correctAnswers: ['1', '1'],
-					};
-				}
-				setQuestionnaire(fetchedQuestionnaire);
-			} catch (error) {
-				console.error('Error fetching event details:', error);
-			}
-		}
-	
-		if (eventId) {
-			fetchEventDetails();
-		}
-
-		async function fetchSignerAddress() {
-			try {
-			  const signer = provider.getSigner();
-			  const address = await signer.getAddress();
-			  setSignerAddress(address);
-			} catch (error) {
-			  console.error('Error fetching signer address:', error);
-			}
-		  }
-	  
-		fetchSignerAddress();
-
+        async function fetchEventDetails() {
+            try {
+                const eventData = await eventRegistryContract.getEvent(eventId);
+                const details = await votingContract.getEventDetailsWithFinalTokenAmount(eventId);
+                const eventDetails = {
+                    eventId: eventData.eventId,
+                    name: eventData.name,
+                    time: eventData.time,
+                    venue: eventData.venue,
+                    ipfsHash: eventData.ipfsHash,
+                    description: eventData.description,
+                    finalTokens: details[5].toNumber(),
+                };
+                setEvent(eventDetails);
+    
+                const userAddress = await signer.getAddress();
+                const claimed = await NOTTContract.hasClaimed(eventId, userAddress);
+                setClaimSuccess(claimed);
+    
+                let fetchedQuestionnaire = null;
+                const questionnaireExists = await questionnaireContract.questionnaireExists(eventId);
+                if (questionnaireExists) {
+                    fetchedQuestionnaire = await questionnaireContract.getQuestionnaire(eventId);
+                } else {
+                    fetchedQuestionnaire = {
+                        questions: ['Did you enjoy the event?', 'Did you gain something out of the event?'],
+                        options: [['Yes', 'No'], ['Yes', 'No']],
+                        correctAnswers: ['1', '1'],
+                    };
+                }
+                setQuestionnaire(fetchedQuestionnaire);
+            } catch (error) {
+                console.error('Error fetching event details:', error);
+            }
+        }
+    
+        if (eventId) {
+            fetchEventDetails();
+        }
+    
+        async function fetchSignerAddress() {
+            try {
+                const address = await signer.getAddress();
+                setSignerAddress(address);
+            } catch (error) {
+                console.error('Error fetching signer address:', error);
+            }
+        }
+    
+        fetchSignerAddress();
+    
         async function checkCanClaim() {
             try {
                 const hasAttended = await NOTTContract.hasTakenAttendance(eventId, signerAddress);
@@ -90,11 +89,12 @@ const Claim = () => {
                 console.error('Error checking if can claim tokens:', error);
             }
         }
-
-        if (eventId && signerAddress) {
+    
+        if (eventId && signerAddress && NOTTContract && provider) {
             checkCanClaim();
         }
-	}, [eventId, signer, eventRegistryContract, votingContract, questionnaireContract]);
+    }, [eventId, signerAddress, NOTTContract, provider, eventRegistryContract, votingContract, questionnaireContract]);
+    
 	
 
     const handleAnswerSelection = (questionIndex, optionIndex) => {
