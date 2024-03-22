@@ -92,6 +92,8 @@ const CreateQuestionnaire = () => {
             setAnswer2A('');
             setAnswer2B('');
             setCorrectAnswer2('');
+
+            alert('Questionnaire created successfully');
         } catch (error) {
             console.error('Error submitting questionnaire:', error);
             setLoading(false);

@@ -37,7 +37,6 @@ const EditQuestionnaire = () => {
     useEffect(() => {
 		const fetchEventAndQuestionnaireDetails = async () => {
 			try {
-				// Fetch event details
 				const eventDetailsResponse = await votingContract.getEventDetailsWithFinalTokenAmount(eventId);
 				const eventDetails = {
 					eventId: eventId,
@@ -50,7 +49,6 @@ const EditQuestionnaire = () => {
 				};
 				setEventDetails(eventDetails);
 	
-				// Fetch questionnaire details
 				const questionnaireDetails = await questionnaireContract.getQuestionnaire(eventId);
 				const [questions, options, correctAnswers] = questionnaireDetails;
 				setQuestion1(questions[0]);
@@ -96,6 +94,7 @@ const EditQuestionnaire = () => {
             const transaction = await questionnaireContract.addQuestionnaire(eventId, questions, options, correctAnswers);
             await transaction.wait();
 			setLoading(false);
+            alert('Questionnaire edited successfully');
 
         } catch (error) {
             console.error('Error submitting questionnaire:', error);
