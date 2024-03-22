@@ -5,6 +5,7 @@ import { ethers } from 'ethers';
 import enrollgif from '../Images/enroll.gif';
 import eth from '../Images/eth.gif';
 import latest from '../Images/latest.gif';
+import noevent from '../Images/noevent.gif';
 import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
 import { NOTTAddress, NOTTABI } from '../Address&Abi/NottinghamCoinContract';
 import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract';
@@ -129,33 +130,42 @@ function Home() {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12">
                 <div className="flex flex-col lg:flex-row lg:space-x-4">
     
-                <div className="lg:w-1/3 bg-[#3840b7] rounded-xl shadow-lg mb-4 flex">
+                <div className="m:w-1/3 bg-[#3840b7] rounded-xl shadow-lg mb-4 flex">
                     <div className="flex-grow flex items-center justify-center w-full lg:h-64">
-                        <PieChart width={300} height={300} className="w-full h-full mb-4">
-                            <Pie
-                                data={chartData}
-                                cx={150}
-                                cy={150}
-                                innerRadius={60}
-                                outerRadius={100}
-                                fill="#8884d8"
-                                paddingAngle={5}
-                                dataKey="value"
-                                label={false}
-                            >
-                                {chartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={index === 0 ? '#82ca9d' : '#d884ce'} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                            <Legend
-                                align="center"
-                                verticalAlign="bottom"
-                                wrapperStyle={{ color: '#fff', fontSize: '14px' }}
-                                contentStyle={{ color: '#fff' }}
-                                className="sm:text-xs mb-2"
-                            />
-                        </PieChart>
+                        {attendedEventsLength === 0 && enrolledEventsLength === 0 ? (
+                            <div className="text-white text-center py-4 mt-0 lg:mt-16">
+                                <img src={noevent} alt="No Event" className="w-full h-[13rem] lg:h-[15rem] rounded-xl mb-2" />
+                                <p className="text-s font-mono text-white flex-grow mb-2">
+                                    Participate in events to access statistical insights.
+                                </p>
+                            </div>
+                        ) : (
+                            <PieChart width={300} height={300} className="w-full h-full mb-4">
+                                <Pie
+                                    data={chartData}
+                                    cx={150}
+                                    cy={150}
+                                    innerRadius={60}
+                                    outerRadius={100}
+                                    fill="#8884d8"
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                    label={false}
+                                >
+                                    {chartData.map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={index === 0 ? '#82ca9d' : '#d884ce'} />
+                                    ))}
+                                </Pie>
+                                <Tooltip />
+                                <Legend
+                                    align="center"
+                                    verticalAlign="bottom"
+                                    wrapperStyle={{ color: '#fff', fontSize: '14px' }}
+                                    contentStyle={{ color: '#fff' }}
+                                    className="sm:text-xs mb-2"
+                                />
+                            </PieChart>
+                        )}
                     </div>
                 </div>
 
