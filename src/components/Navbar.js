@@ -41,7 +41,7 @@ function Navbar({ signerAddress }) {
     }
   }, [signerAddress]);
 
-  const showFullNavbar = signerAddress === '0x2Ffd02772a9A33D73aD16908dF16900AD1326f3E';
+  const showFullNavbar = signerAddress === '0x2Ffd02772a9A33D73aD16908dF16900AD1326f3E' || signerAddress === '0x0a7665c13953491c66A3313c1256c2800E5D9853';
 
   return (
     <nav className='text-white p-4 flex justify-between items-center' style={{ background: 'linear-gradient(to right, #0b287b, #0e2b7d, #172f84, #23378c, #2e3b8f, #394094, #404294, #4a4597, #544898, #5e4b9c, #694f9d, #7453a0, #7f56a1, #8559a3)' }}>
