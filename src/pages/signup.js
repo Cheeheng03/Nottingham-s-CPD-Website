@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
-import signup from "../Images/signup.jpg"
+import signup from "../Images/signup.jpg";
+import loadinggif from '../Images/loading.gif';
 import { StudentInfoAddress, StudentInfoAbi } from '../Address&Abi/StudentRegistryContract';
 
 function Signup() {
@@ -39,11 +40,11 @@ function Signup() {
       const txResponse = await contract.registerStudent(studentID, name, email, password);
       await txResponse.wait();
       setLoading(false);
-      alert('Student registered successfully.');
+      alert('User registered successfully.');
       navigate('/');
     } catch (error) {
       console.error(error);
-      alert('Student already registered.');
+      alert('User registration failed.');
       setLoading(false);
     }
   };
@@ -61,11 +62,11 @@ function Signup() {
   return (
     <div className="bg-gray-50 min-h-screen flex items-center justify-center">
       {loading && (
-            <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
-                <div className="animate-spin rounded-full h-20 w-20 border-t-2 border-b-2 border-gray-200"></div>
-                <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
-            </div>
-          )}
+          <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
+              <img src={loadinggif} alt="Loading..." className="h-28" />
+              <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
+          </div>
+      )}
       <div className="flex flex-wrap max-w-6xl h-[45rem] mx-auto">
         <div className="hidden lg:block lg:w-1/2 overflow-hidden rounded-l-2xl">
           <img 
