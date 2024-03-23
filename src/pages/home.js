@@ -135,7 +135,7 @@ function Home() {
                         {attendedEventsLength === 0 && enrolledEventsLength === 0 ? (
                             <div className="text-white text-center py-4 mt-0 lg:mt-16 md:w-[310px]">
                                 <img src={noevent} alt="No Event" className="w-full h-[13rem] lg:h-[15rem] rounded-xl mb-2" />
-                                <p className="text-s font-mono text-white flex-grow mb-2">
+                                <p className="text-s font-mono text-white flex-grow mb-2 p-2">
                                     Participate in events to access statistical insights.
                                 </p>
                             </div>
