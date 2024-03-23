@@ -44,44 +44,46 @@ function Navbar({ signerAddress }) {
   const showFullNavbar = signerAddress === '0x2Ffd02772a9A33D73aD16908dF16900AD1326f3E' || signerAddress === '0x0a7665c13953491c66A3313c1256c2800E5D9853' || signerAddress === '0x59BA804564A7dD67A2b29F319d9983414284c297';
 
   return (
-    <nav className='text-white p-4 flex justify-between items-center' style={{ background: 'linear-gradient(to right, #0b287b, #0e2b7d, #172f84, #23378c, #2e3b8f, #394094, #404294, #4a4597, #544898, #5e4b9c, #694f9d, #7453a0, #7f56a1, #8559a3)' }}>
-      <button 
-        onClick={() => setIsNavOpen(!isNavOpen)}
-        className='z-20 text-white'
-      >
-        {isNavOpen ? (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
-          </svg>
-        )}
-      </button>
-      <div className="hidden sm:block">
-        <div className="ml-10 flex items-center">
-          <div className="mr-4">
-            <div>{currentDay}</div>
-            <div>{currentDate}</div>
+    <div style={{ position: 'relative', zIndex: 10 }}>
+      <nav className='text-white p-4 flex justify-between items-center relative z-20' style={{ background: 'linear-gradient(to right, #0b287b, #0e2b7d, #172f84, #23378c, #2e3b8f, #394094, #404294, #4a4597, #544898, #5e4b9c, #694f9d, #7453a0, #7f56a1, #8559a3)' }}>
+        <button
+          onClick={() => setIsNavOpen(!isNavOpen)}
+          className='z-20 text-white'
+        >
+          {isNavOpen ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+          )}
+        </button>
+        <div className="hidden sm:block">
+          <div className="ml-10 flex items-center">
+            <div className="mr-4">
+              <div>{currentDay}</div>
+              <div>{currentDate}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex justify-center items-center flex-grow">
-        <img src={logo} alt="Logo" className="h-10 sm:h-8 md:h-10 lg:h-12 xl:h-12" />
-      </div>
-      
-      <div className="hidden sm:block">
-        {studentName && (
-          <div className="flex items-center">
-            <span className="order-1 mr-2">{studentName}</span>
-            <img src={profile} alt="profile" className="order-2 h-10 md:h-10 lg:h-12 xl:h-12" />
-          </div>
-        )}
-      </div>
+        <div className="flex justify-center items-center flex-grow">
+          <img src={logo} alt="Logo" className="h-10 sm:h-8 md:h-10 lg:h-12 xl:h-12" />
+        </div>
 
-      <div className={`fixed top-0 left-0 w-full md:w-1/2 lg:w-1/4 xl:w-1/5 2xl:w-1/6 h-full transform ${isNavOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-10 flex justify-center items-center`} style={{ background: 'linear-gradient(to right, #0b287b, #0e2b7d, #172f84)' }}>
-      <ul className='flex top-20 flex-col items-start justify-start min-h-full' style={{ position: 'relative' }}>
+        <div className="hidden sm:block">
+          {studentName && (
+            <div className="flex items-center">
+              <span className="order-1 mr-2">{studentName}</span>
+              <img src={profile} alt="profile" className="order-2 h-10 md:h-10 lg:h-12 xl:h-12" />
+            </div>
+          )}
+        </div>
+      </nav>
+
+      <div className={`text-white fixed top-0 left-0 w-full md:w-1/2 lg:w-1/4 xl:w-1/5 2xl:w-1/6 h-full transform ${isNavOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 ease-in-out z-0 flex justify-center items-center`} style={{ background: 'linear-gradient(to right, #0b287b, #0e2b7d, #172f84)' }}>
+        <ul className='flex top-20 flex-col items-start justify-start min-h-full' style={{ position: 'relative' }}>
           <li className='py-4 flex items-center'>
             <FontAwesomeIcon icon={faHome} className='mr-3' />
             <a href="/home" className='hover:underline text-white text-lg'>Home</a>
@@ -108,15 +110,15 @@ function Navbar({ signerAddress }) {
                 <FontAwesomeIcon icon={faClipboardList} className='mr-3' />
                 <a href="/createdlist" className='hover:underline text-white text-lg'>Questionnaire Creation</a>
               </li>
-            </>
-          )}
+              </>
+            )}
           <li className='py-4 flex items-center'>
             <FontAwesomeIcon icon={faSignOutAlt} className='mr-3' />
             <a href="/logout" className='hover:underline text-white text-lg'>Logout</a>
           </li>
         </ul>
       </div>
-    </nav>
+    </div>
   );
 }
 
