@@ -140,7 +140,7 @@ function Home() {
                                 </p>
                             </div>
                         ) : (
-                            <PieChart width={300} height={300} className="w-full h-full mb-4">
+                            <PieChart className="w-full h-full mb-4">
                                 <Pie
                                     data={chartData}
                                     cx={150}
