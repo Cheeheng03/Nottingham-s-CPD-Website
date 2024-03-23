@@ -133,38 +133,40 @@ function Home() {
                 <div className="m:w-1/3 bg-[#3840b7] rounded-xl shadow-lg mb-4 flex">
                     <div className="flex-grow flex items-center justify-center w-full lg:h-64">
                         {attendedEventsLength === 0 && enrolledEventsLength === 0 ? (
-                            <div className="text-white text-center py-4 mt-0 lg:mt-16">
+                            <div className="text-white text-center py-4 mt-0 lg:mt-16 md:w-[350px]">
                                 <img src={noevent} alt="No Event" className="w-full h-[13rem] lg:h-[15rem] rounded-xl mb-2" />
                                 <p className="text-s font-mono text-white flex-grow mb-2">
                                     Participate in events to access statistical insights.
                                 </p>
                             </div>
                         ) : (
-                            <PieChart className="w-full h-full mb-4">
-                                <Pie
-                                    data={chartData}
-                                    cx={150}
-                                    cy={150}
-                                    innerRadius={60}
-                                    outerRadius={100}
-                                    fill="#8884d8"
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                    label={false}
-                                >
-                                    {chartData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={index === 0 ? '#82ca9d' : '#d884ce'} />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                                <Legend
-                                    align="center"
-                                    verticalAlign="bottom"
-                                    wrapperStyle={{ color: '#fff', fontSize: '14px' }}
-                                    contentStyle={{ color: '#fff' }}
-                                    className="sm:text-xs mb-2"
-                                />
-                            </PieChart>
+                             <div className="text-white text-center py-4 mt-0 lg:mt-16">
+                                <PieChart width={350} height={300} className="w-full h-full mb-4">
+                                    <Pie
+                                        data={chartData}
+                                        cx={150}
+                                        cy={150}
+                                        innerRadius={60}
+                                        outerRadius={100}
+                                        fill="#8884d8"
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                        label={false}
+                                    >
+                                        {chartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={index === 0 ? '#82ca9d' : '#d884ce'} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                    <Legend
+                                        align="center"
+                                        verticalAlign="bottom"
+                                        wrapperStyle={{ color: '#fff', fontSize: '14px' }}
+                                        contentStyle={{ color: '#fff' }}
+                                        className="sm:text-xs mb-2"
+                                    />
+                                </PieChart>
+                            </div>
                         )}
                     </div>
                 </div>
