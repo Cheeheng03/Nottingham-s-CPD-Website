@@ -186,7 +186,7 @@ function Home() {
                                 <div className='flex-1 p-4 rounded-t-xl rounded-b-xl lg:rounded-r-xl lg:rounded-l-none items-center justify-center' style={{ background: 'linear-gradient(to right, #0b287b, #0e2b7d, #172f84, #23378c, #2e3b8f, #394094, #404294, #4a4597, #544898, #5e4b9c, #694f9d, #7453a0, #7f56a1, #8559a3)', color: 'white', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                                 {latestEvent.length > 0 ? (
                                     <>
-                                    <h3 className="font-mono text-4xl xl:text-5xl font-semibold mb-10 mt-10">Latest Event:</h3>
+                                    <h3 className="text-4xl xl:text-5xl font-semibold mb-10 mt-10">Latest Event:</h3>
                                     <p className="text-center">Name: {latestEvent[0].name}</p>
                                     <p className="mt-1 text-center lg:text-left">Time: {new Date(latestEvent[0].time * 1000).toLocaleString()}</p>
                                     <p className="mt-1 text-center">Tokens Rewarded: {latestEvent[0].finalTokens}</p>
@@ -196,7 +196,7 @@ function Home() {
                                     </>
                                 ) : (
                                     <>
-                                    <h3 className="font-mono text-4xl xl:text-5xl mb-10 mt-10">Check out our latest events now!</h3>
+                                    <h3 className="font-semibold text-4xl xl:text-5xl mb-10 mt-10">Check out our latest events now!</h3>
                                     <a href="/studentevents" className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-600 flex items-center justify-center w-full lg:w-1/3">
                                         Go
                                     </a>
@@ -240,7 +240,7 @@ function Home() {
                                 <img src={eth} alt="Ethereum" className="object-contain h-64 max-w-full px-4" />
                             </div>
                             <div className="text-white text-center py-4">
-                                <p className="text-m lg:text-3xl font-semibold text-white flex-grow mb-4">
+                                <p className="text-m lg:text-3xl font-semibold text-white flex-grow mb-1">
                                     Nottingham Tokens Claimed: {finalTokensNumber} NOTT
                                 </p>
                             </div>

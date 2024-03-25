@@ -180,7 +180,7 @@ const VotePage = () => {
 			}
 	  
 			console.log(`User at address ${await signer.getAddress()} has cast a vote for Event ID ${eventId}`);
-
+			alert("Casted voted for event successully");
 		  } else {
 			console.log('You have already voted for this event.');
 			setLoading(false);

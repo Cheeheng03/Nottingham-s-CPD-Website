@@ -5,7 +5,6 @@ import Home from './pages/home';
 import ClaimToken from './pages/claimtokens';
 import Logout from './pages/logout';
 import Signup from './pages/signup';
-import Database from './pages/database';
 import Login from './pages/login';
 import CreateEventForm from './pages/eventcreation'
 import EventList from './pages/eventlist'
@@ -34,7 +33,6 @@ function App() {
             <Route path="/claim/:eventId" element={<Claim />} />
             <Route path="/attendance/:eventId" element={<Attendance />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/database" element={<Database />} />
             <Route path="/logout" element={<Logout setAccountAddress={""} />} />
             <Route path="/eventcreation" element={<CreateEventForm />} />
             <Route path="/eventlist" element={<EventList />} />
