@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../Images/logo.png';
 import profile from '../Images/profile.png'
+import { Link } from 'react-router-dom';
 import { StudentInfoAddress, StudentInfoAbi } from '../Address&Abi/StudentRegistryContract';
 import { ethers } from 'ethers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -68,7 +69,9 @@ function Navbar({ signerAddress }) {
         </div>
       </div>
       <div className="flex justify-center items-center flex-grow">
-        <img src={logo} alt="Logo" className="h-10 sm:h-8 md:h-10 lg:h-12 xl:h-12" />
+        <Link to="/home">
+            <img src={logo} alt="Logo" className="h-10 sm:h-8 md:h-10 lg:h-12 xl:h-12 cursor-pointer" />
+        </Link>
       </div>
       
       <div className="hidden sm:block">
