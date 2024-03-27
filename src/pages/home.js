@@ -99,7 +99,7 @@ function Home() {
                                 venue: event.venue,
                                 ipfsHash: event.ipfsHash,
                                 description: event.description,
-                                finalTokens: finalTokens.toNumber(),
+                                finalTokens: finalTokens.toNumber() === 0 ? 5 : finalTokens.toNumber(),
                                 status: status
                             };
                         }

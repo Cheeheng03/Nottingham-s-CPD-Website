@@ -18,6 +18,7 @@ import Enroll from './pages/enroll';
 import Claim from './pages/claim';
 import Attendance from './pages/attendance';
 import Landing from './pages/landing';
+import Steps from './pages/steps';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/connect" element={<Connect />} />
+            <Route path="/guideline" element={<Steps />} />
             <Route path="/home" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/claimtoken" element={<ClaimToken />} />

@@ -1,0 +1,141 @@
+import React, { useState, useEffect } from 'react';
+import { ethers } from 'ethers';
+import Navbar from '../components/Navbar';
+import { Link } from 'react-router-dom';
+import Step1Logo from '../Images/step1.png';
+import Step2Logo from '../Images/step2.png';
+import Step3Logo from '../Images/step3.png';
+import Step4Logo from '../Images/step4.png';
+
+export default function Steps () {
+	const [signerAddress, setSignerAddress] = useState('');
+    const [isLoaded, setIsLoaded] = useState(false);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const showGovernanceStep = signerAddress === '0x2Ffd02772a9A33D73aD16908dF16900AD1326f3E' || signerAddress === '0x0a7665c13953491c66A3313c1256c2800E5D9853' || signerAddress === '0x59BA804564A7dD67A2b29F319d9983414284c297' || signerAddress === '0xa504E86C89Cc27fE8422316293d00b4ef945E4De';
+    const tokenContractAddress = '0xd4BCA3131b49613F069980B1026CC96202Cc2786';
+    const [copySuccess, setCopySuccess] = useState(false);
+
+    useEffect(() => {
+        setIsLoaded(true);
+
+		async function fetchSignerAddress() {
+			try {
+			  const signer = provider.getSigner();
+			  const address = await signer.getAddress();
+			  setSignerAddress(address);
+			} catch (error) {
+			  console.error('Error fetching signer address:', error);
+			}
+		  }
+	  
+		  fetchSignerAddress();
+    }, []);
+
+    const copyToClipboard = async () => {
+        try {
+            await navigator.clipboard.writeText(tokenContractAddress);
+            setCopySuccess(true);
+            setTimeout(() => {
+                setCopySuccess(false);
+            }, 3000);
+        } catch (error) {
+            console.error('Failed to copy:', error);
+        }
+    };
+
+    return (
+        <div>
+			<Navbar signerAddress={signerAddress} />
+            <div className="max-w-4xl mx-auto py-12">
+                <h1 className="text-[#0b287b] text-4xl font-bold text-center mb-8">Step by Step Guide on How to Use the System</h1>
+                {showGovernanceStep && (
+                    <>
+                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
+                                <img src={Step1Logo} alt="Step 1" className="w-[8rem] lg:w-[10rem]" />
+                            </div>
+                            <div className="w-full md:w-1/2 text-center md:text-left">
+                                <h2 className="text-[#5e4b9c] text-4xl font-semibold mb-2">Step 1</h2>
+                                <p className="p-4 text-[#384464] text-lg">Navigate to <Link to="/eventcreation" className="text-[#cc4d95]">Event Creation</Link> to create an event.</p>
+                            </div>
+                        </div>
+                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0 delay-150'}`}>
+                            <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
+                                <img src={Step2Logo} alt="Step 1" className="w-[8rem] lg:w-[10rem]" />
+                            </div>
+                            <div className="w-full md:w-1/2 text-center md:text-right">
+                                <h2 className="text-[#5e4b9c] text-4xl font-semibold mb-2">Step 2</h2>
+                                <p className="p-4 text-[#384464] text-lg">Next, navigate to <Link to="/eventlist" className="text-[#cc4d95]">Event Voting</Link> to vote for the amount of tokens to be rewarded for each event.</p>
+                            </div>
+                        </div>
+                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
+                                <img src={Step3Logo} alt="Step 1" className="w-[10rem] lg:w-[12rem]" />
+                            </div>
+                            <div className="w-full md:w-1/2 text-center md:text-left">
+                                <h2 className="text-[#5e4b9c] text-4xl font-semibold mb-2">Step 3</h2>
+                                <p className="p-4 text-[#384464] text-lg">Then, navigate to <Link to="/createdlist" className="text-[#cc4d95]">Questionnaire Creation</Link> to create a custom questionnaire regarding your event after the voting period ends.</p>
+                            </div>
+                        </div>
+                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0 delay-150'}`}>
+                            <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
+                                <img src={Step4Logo} alt="Step 1" className="w-[10rem] lg:w-[12rem]" />
+                            </div>
+                            <div className="w-full md:w-1/2 text-center md:text-right">
+                                <h2 className="text-[#5e4b9c] text-4xl font-semibold mb-2">Step 4</h2>
+                                <p className="p-4 text-[#384464] text-lg">You're all set and the event you have created is open for <Link to="/studentevents" className="text-[#cc4d95]">Enrollment</Link>!.</p>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {!showGovernanceStep && (
+                <>
+                    <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
+                                <img src={Step1Logo} alt="Step 1" className="w-[8rem] lg:w-[10rem]" />
+                            </div>
+                            <div className="w-full md:w-1/2 text-center md:text-left">
+                                <h2 className="text-[#5e4b9c] text-4xl font-semibold mb-2">Step 1</h2>
+                                <p className="p-4 text-[#384464] text-lg">Navigate to <Link to="/studentevents" className="text-[#cc4d95]">Event Enrollment</Link> to join events.</p>
+                            </div>
+                        </div>
+                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0 delay-150'}`}>
+                            <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
+                                <img src={Step2Logo} alt="Step 1" className="w-[8rem] lg:w-[10rem]" />
+                            </div>
+                            <div className="w-full md:w-1/2 text-center md:text-right">
+                                <h2 className="text-[#5e4b9c] text-4xl font-semibold mb-2">Step 2</h2>
+                                <p className="p-4 text-[#384464] text-lg">When the event has started, navigate to <Link to="/claimtoken" className="text-[#cc4d95]">Claim Tokens</Link> to mark your attendance.</p>
+                            </div>
+                        </div>
+                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                            <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
+                                <img src={Step3Logo} alt="Step 1" className="w-[10rem] lg:w-[12rem]" />
+                            </div>
+                            <div className="w-full md:w-1/2 text-center md:text-left">
+                                <h2 className="text-[#5e4b9c] text-4xl font-semibold mb-2">Step 3</h2>
+                                <p className="p-4 text-[#384464] text-lg">Then, click on claim tokens and fill out the event's questionnaire to claim your tokens.</p>
+                            </div>
+                        </div>
+                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0 delay-150'}`}>
+                            <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
+                                <img src={Step4Logo} alt="Step 1" className="w-[10rem] lg:w-[12rem]" />
+                            </div>
+                            <div className="w-full md:w-1/2 text-center md:text-right">
+                                <h2 className="text-[#5e4b9c] text-4xl font-semibold mb-2">Step 4</h2>
+                                <p className="p-4 text-[#384464] text-lg">
+                                    To import NOTT tokens into your MetaMask wallet, open your wallet and click on "Import Tokens" then fill in the
+                                    <button className="text-[#cc4d95] ml-1" onClick={copyToClipboard}>
+                                        Token Contract Address.
+                                    </button>
+                                    {copySuccess && <span className="text-green-500 ml-1">(Copied!)</span>}
+                                </p>                           
+                            </div>
+                        </div>
+                    </>
+                )}
+            </div>
+        </div>
+    );
+}

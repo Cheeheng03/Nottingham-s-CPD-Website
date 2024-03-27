@@ -4,7 +4,7 @@ import profile from '../Images/profile.png'
 import { StudentInfoAddress, StudentInfoAbi } from '../Address&Abi/StudentRegistryContract';
 import { ethers } from 'ethers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faCoins, faCalendarAlt, faPlus, faVoteYea, faClipboardList, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faCoins, faCalendarAlt, faPlus, faVoteYea, faClipboardList, faSignOutAlt, faUser } from '@fortawesome/free-solid-svg-icons';
 
 function Navbar({ signerAddress }) {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -110,6 +110,10 @@ function Navbar({ signerAddress }) {
               </li>
             </>
           )}
+          <li className='py-4 flex items-center'>
+            <FontAwesomeIcon icon={faUser} className='mr-3' />
+            <a href="/guideline" className='hover:underline text-white text-lg'>User Guide</a>
+          </li>
           <li className='py-4 flex items-center'>
             <FontAwesomeIcon icon={faSignOutAlt} className='mr-3' />
             <a href="/logout" className='hover:underline text-white text-lg'>Logout</a>
