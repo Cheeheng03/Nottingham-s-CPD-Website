@@ -50,7 +50,7 @@ export default function Steps () {
                 <h1 className="text-[#0b287b] text-4xl font-bold text-center mb-8">Step by Step Guide on How to Use the System</h1>
                 {showGovernanceStep && (
                     <>
-                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInRight' : 'opacity-0'}`}>
                             <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
                                 <img src={Step1Logo} alt="Step 1" className="w-[8rem] lg:w-[10rem]" />
                             </div>
@@ -59,7 +59,7 @@ export default function Steps () {
                                 <p className="p-4 text-[#384464] text-lg">Navigate to <Link to="/eventcreation" className="text-[#cc4d95]">Event Creation</Link> to create an event.</p>
                             </div>
                         </div>
-                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0 delay-150'}`}>
+                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInLeftdelay750' : 'opacity-0 delay-150'}`}>
                             <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
                                 <img src={Step2Logo} alt="Step 1" className="w-[8rem] lg:w-[10rem]" />
                             </div>
@@ -68,7 +68,7 @@ export default function Steps () {
                                 <p className="p-4 text-[#384464] text-lg">Next, navigate to <Link to="/eventlist" className="text-[#cc4d95]">Event Voting</Link> to vote for the amount of tokens to be rewarded for each event.</p>
                             </div>
                         </div>
-                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInRightdelay1000' : 'opacity-0'}`}>
                             <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
                                 <img src={Step3Logo} alt="Step 1" className="w-[10rem] lg:w-[12rem]" />
                             </div>
@@ -77,7 +77,7 @@ export default function Steps () {
                                 <p className="p-4 text-[#384464] text-lg">Then, navigate to <Link to="/createdlist" className="text-[#cc4d95]">Questionnaire Creation</Link> to create a custom questionnaire regarding your event after the voting period ends.</p>
                             </div>
                         </div>
-                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0 delay-150'}`}>
+                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInLeftdelay1250' : 'opacity-0 delay-150'}`}>
                             <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
                                 <img src={Step4Logo} alt="Step 1" className="w-[10rem] lg:w-[12rem]" />
                             </div>
@@ -91,7 +91,7 @@ export default function Steps () {
 
                 {!showGovernanceStep && (
                 <>
-                    <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                    <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInRight' : 'opacity-0'}`}>
                             <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
                                 <img src={Step1Logo} alt="Step 1" className="w-[8rem] lg:w-[10rem]" />
                             </div>
@@ -100,7 +100,7 @@ export default function Steps () {
                                 <p className="p-4 text-[#384464] text-lg">Navigate to <Link to="/studentevents" className="text-[#cc4d95]">Event Enrollment</Link> to join events.</p>
                             </div>
                         </div>
-                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0 delay-150'}`}>
+                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInLeftdelay750' : 'opacity-0 delay-150'}`}>
                             <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
                                 <img src={Step2Logo} alt="Step 1" className="w-[8rem] lg:w-[10rem]" />
                             </div>
@@ -109,7 +109,7 @@ export default function Steps () {
                                 <p className="p-4 text-[#384464] text-lg">When the event has started, navigate to <Link to="/claimtoken" className="text-[#cc4d95]">Claim Tokens</Link> to mark your attendance.</p>
                             </div>
                         </div>
-                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}>
+                        <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInRightdelay1000' : 'opacity-0'}`}>
                             <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
                                 <img src={Step3Logo} alt="Step 1" className="w-[10rem] lg:w-[12rem]" />
                             </div>
@@ -118,7 +118,7 @@ export default function Steps () {
                                 <p className="p-4 text-[#384464] text-lg">Then, click on claim tokens and fill out the event's questionnaire to claim your tokens.</p>
                             </div>
                         </div>
-                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100' : 'opacity-0 delay-150'}`}>
+                        <div className={`flex flex-col md:flex-row-reverse items-center justify-between gap-4 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInLeftdelay1250' : 'opacity-0 delay-150'}`}>
                             <div className="w-full h-[15rem] lg:h-[20rem] md:w-1/2 flex justify-center">
                                 <img src={Step4Logo} alt="Step 1" className="w-[10rem] lg:w-[12rem]" />
                             </div>
