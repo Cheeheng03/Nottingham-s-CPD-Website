@@ -130,7 +130,7 @@ function Home() {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-12">
                 <div className="flex flex-col lg:flex-row lg:space-x-4">
     
-                <div className="m:w-1/3 bg-[#3840b7] rounded-xl shadow-lg mb-4 flex">
+                <div className="m:w-1/3 bg-[#3840b7] rounded-xl shadow-lg mb-4 flex animate-slideInLeft">
                     <div className="flex-grow flex items-center justify-center w-full lg:h-64">
                         {attendedEventsLength === 0 && enrolledEventsLength === 0 ? (
                             <div className="text-white text-center py-4 mt-0 lg:mt-16 md:w-[310px]">
@@ -171,7 +171,7 @@ function Home() {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-lg mb-4 flex flex-col lg:flex-row w-full h-80">
+                <div className="bg-white rounded-xl shadow-lg mb-4 flex flex-col lg:flex-row w-full h-80 animate-slideInRight">
                     <div className="flex-grow flex flex-col sm:flex-row p-0">
                         
                             <div className="flex-1 flex flex-col sm:flex-row">
@@ -211,7 +211,7 @@ function Home() {
             </div>
     
                 <div className="flex flex-col lg:flex-row lg:space-x-4">
-                    <div className="lg:w-1/2 bg-white rounded-xl shadow-lg mb-4">
+                    <div className="lg:w-1/2 bg-white rounded-xl shadow-lg mb-4 animate-slideInLeft">
                         <div className="flex-grow h-52 lg:h-[20rem]">
                             <img src={enrollgif} alt="Enroll" className="w-full h-full object-cover rounded-t-xl" />
                         </div>
@@ -234,7 +234,7 @@ function Home() {
                         </Link>
                     </div>
     
-                    <Link to="/studentevents" className="lg:w-1/2 rounded-xl shadow-lg mb-4 overflow-hidden" style={{ background: 'linear-gradient(to top, #212465, #4971df)' }}>
+                    <Link to="/studentevents" className="lg:w-1/2 rounded-xl shadow-lg mb-4 overflow-hidden animate-slideInRight" style={{ background: 'linear-gradient(to top, #212465, #4971df)' }}>
                         <div className="flex flex-col justify-between h-full" style={{ minHeight: '20rem', maxHeight: '32rem' }}>
                             <div className="flex-grow flex justify-center items-center">
                                 <img src={eth} alt="Ethereum" className="object-contain h-64 max-w-full px-4" />
