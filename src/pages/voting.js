@@ -15,9 +15,6 @@ const VotePage = () => {
     const [tokensWorth, setTokensWorth] = useState(5);
     const [hasVoted, setHasVoted] = useState(false);
     const [remainingTime, setRemainingTime] = useState(0);
-    const [votesForToken5, setVotesForToken5] = useState(0);
-    const [votesForToken10, setVotesForToken10] = useState(0);
-    const [votesForToken15, setVotesForToken15] = useState(0);
 	const [totalVotesForToken5, setTotalVotesForToken5] = useState(0);
 	const [totalVotesForToken10, setTotalVotesForToken10] = useState(0);
 	const [totalVotesForToken15, setTotalVotesForToken15] = useState(0);
@@ -81,14 +78,6 @@ const VotePage = () => {
   
     const fetchVotesForTokens = async () => {
 		try {
-			const votes5 = await getVotesForTokenFromBlockchain(eventId, 5);
-			const votes10 = await getVotesForTokenFromBlockchain(eventId, 10);
-			const votes15 = await getVotesForTokenFromBlockchain(eventId, 15);
-	
-			setVotesForToken5(votes5);
-			setVotesForToken10(votes10);
-			setVotesForToken15(votes15);
-	
 			const totalVotes5 = await getTotalVotesForTokenFromBlockchain(eventId, 5);
 			const totalVotes10 = await getTotalVotesForTokenFromBlockchain(eventId, 10);
 			const totalVotes15 = await getTotalVotesForTokenFromBlockchain(eventId, 15);

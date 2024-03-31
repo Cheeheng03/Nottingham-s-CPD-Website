@@ -59,7 +59,7 @@ const EventList = () => {
 	const getRemainingTime = async (eventId) => {
 		try {
 			const remainingTime = await votingContract.getRemainingTime(eventId);
-			return remainingTime.toNumber(); // Convert BigNumber to number
+			return remainingTime.toNumber(); 
 		} catch (error) {
 			console.error('Error fetching remaining time for event:', error);
 			return 0;
@@ -122,7 +122,8 @@ const EventList = () => {
                         open={isPendingEventsOpen}
                         transitionTime={200}
                     >
-                       <div className="flex flex-nowrap overflow-x-auto py-4" ref={pendingEventsRef}>
+
+                        <div className="flex flex-nowrap overflow-x-auto py-4" ref={pendingEventsRef}>
                             {pendingEvents.length === 0 ? (
                                 <div className="flex justify-center items-center h-full w-full">
                                 <div className="text-center">
@@ -135,15 +136,19 @@ const EventList = () => {
                             ) : (
                                 pendingEvents.map((event, index) => (
                                     <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
-                                        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full">
+                                        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full flex flex-col">
                                             <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 object-cover" />
-                                            <div className="p-4">
-												<p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-												<p className="mt-1 text-gray-600">Name: {event.name}</p>
-												<p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
-												<p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-												<p className="mt-1 text-gray-600">Description: {event.description}</p>
-												<Link to={`/vote/${event.eventId}`} className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center block">Vote</Link>
+                                            <div className="flex-1 p-4 flex flex-col justify-between">
+                                                <div>
+                                                    <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
+                                                    <p className="mt-1 text-gray-600">Name: {event.name}</p>
+                                                    <p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
+                                                    <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
+                                                    <p className="mt-1 text-gray-600">Description: {event.description}</p>
+                                                </div>
+                                                <Link to={`/vote/${event.eventId}`} className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center block">
+                                                    Vote
+                                                </Link>
                                             </div>
                                         </div>
                                     </div>
@@ -189,19 +194,6 @@ const EventList = () => {
 												<p className="mt-1 text-gray-600">Venue: {event.venue}</p>
 												<p className="mt-1 text-gray-600">Description: {event.description}</p>
 											</div>
-											{event.hasVoted ? (
-												<p className="mt-1 text-gray-600">Status: Voted</p>
-											) : (
-												<>
-													{event.remainingTime <= 0 ? (
-														<p className="mt-1 text-gray-600">Status: Due</p>
-													) : (
-														<Link to={`/vote/${event.eventId}`} className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center">
-															Vote
-														</Link>
-													)}
-												</>
-											)}
                                         </div>
                                     </div>
                                 ))
