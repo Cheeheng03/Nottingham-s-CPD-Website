@@ -35,6 +35,7 @@ const StudentEvents = () => {
                         const userHasEnrolled = await eventRegistryContract.hasEnrolled(event.eventId, signer.getAddress());
                         const finalTokens = await votingContract.getEventFinalTokens(event.eventId);
                         const currentTime = new Date().getTime();
+                        const totalVotes = await votingContract.g
                         const eventTime = event.time * 1000;
                         let status = '';
                         if (currentTime < eventTime) {
@@ -57,7 +58,7 @@ const StudentEvents = () => {
                     })
                 );
                 const enrolledEventsDetails = eventsWithTokens.filter(event => event.hasEnrolled);
-                const openEventsDetails = eventsWithTokens.filter(event => !event.hasEnrolled && event.status === 'Active');
+                const openEventsDetails = eventsWithTokens.filter(event => !event.hasEnrolled && event.status === 'Active' && event.remainingTime <= 0);
                 const pastEventsDetails = eventsWithTokens.filter(event => event.status === 'Past');
                 
                 setEnrolledEvents(enrolledEventsDetails);

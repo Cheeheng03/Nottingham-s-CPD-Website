@@ -11,7 +11,7 @@ export const votingContractABI = [
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
-	{
+	{	
 		"anonymous": false,
 		"inputs": [
 			{
