@@ -114,7 +114,7 @@ function Navbar({ signerAddress }) {
           </li>
           <li className='py-4 flex items-center'>
             <FontAwesomeIcon icon={faCalendarAlt} className='mr-3' />
-            <a href="/eventenrollementlist" className='hover:underline text-white text-lg'>Event Enrollment</a>
+            <a href="/eventenrollmentlist" className='hover:underline text-white text-lg'>Event Enrollment</a>
           </li>
           {/* Show additional navbar for users of governance body */}
           {showFullNavbar && (
