@@ -45,6 +45,10 @@ const EventEnrollmentList = () => {
                         const finalTokens = await votingContract.getEventFinalTokens(event.eventId);
                         const currentTime = new Date().getTime();
                         const eventTime = event.time * 1000;
+                        const totalVotesForEvent =  await votingContract.tokenTotalVotes(event.eventId, 5) +
+                                                    await votingContract.tokenTotalVotes(event.eventId, 10) +
+                                                    await votingContract.tokenTotalVotes(event.eventId, 15);
+
                         let status = '';
                         if (currentTime < eventTime) {
                             status = 'Active';
@@ -61,12 +65,13 @@ const EventEnrollmentList = () => {
                             finalTokens: finalTokens.toNumber(),
                             remainingTime: remainingTime.toNumber(),
                             hasEnrolled: userHasEnrolled,
-                            status: status
+                            status: status,
+                            totalvotes: totalVotesForEvent
                         };
                     })
                 );
                 const enrolledEventsDetails = eventsWithTokens.filter(event => event.hasEnrolled);
-                const openEventsDetails = eventsWithTokens.filter(event => !event.hasEnrolled && event.status === 'Active' && event.remainingTime <= 0);
+                const openEventsDetails = eventsWithTokens.filter(event => !event.hasEnrolled && event.status === 'Active' && (event.remainingTime <= 0 || event.totalvotes > 0));
                 const pastEventsDetails = eventsWithTokens.filter(event => event.status === 'Past');
                 
                 setEnrolledEvents(enrolledEventsDetails);

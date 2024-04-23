@@ -60,7 +60,7 @@ const Attendance = () => {
         if (eventId && signerAddress) {
             checkAttendanceTaken();
         }
-
+    
         // Function to fetch event details and determine attendance area
         async function fetchEventDetails() {
             try {
@@ -93,11 +93,11 @@ const Attendance = () => {
         }
     
         fetchSignerAddress();
-
+    
         // Function to check if the user is within the attendance area
         const checkAttendanceArea = (location) => {
             if (venueArea) {
-                const distance =  (location.lat, location.lng, venueArea.center.lat, venueArea.center.lng);
+                const distance = getDistanceFromLatLonInM(location.lat, location.lng, venueArea.center.lat, venueArea.center.lng);
                 if (distance < venueArea.radius) {
                     setWithinAttendanceArea(true);
                 } else {
@@ -134,6 +134,7 @@ const Attendance = () => {
     
     }, [eventId, NOTTContract, signerAddress, eventRegistryContract, signer]);
     
+    
     // Effect hook to set initial loading state
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -163,6 +164,25 @@ const Attendance = () => {
         } else {
             console.log("Venue not found, no specific attendance area set.");
         }
+    };
+
+    // Function to calculate the distance between two locations
+    const getDistanceFromLatLonInM = (lat1, lng1, lat2, lng2) => {
+        var R = 6371;
+        var dLat = deg2rad(lat2-lat1);
+        var dLon = deg2rad(lng2-lng1); 
+        var a = 
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+          Math.sin(dLon/2) * Math.sin(dLon/2)
+          ; 
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        var distance = R * c * 1000;
+        return distance;
+    };
+
+    const deg2rad = (deg) => {
+        return deg * (Math.PI/180);
     };
 
     // Function to handle attendance marking
@@ -198,25 +218,25 @@ const Attendance = () => {
         <div className="relative mb-2">
             {/* Navbar component with signer address */}
             <Navbar signerAddress={signerAddress} />
-    
-            {/* Loading overlay */}
+
+            {/* Render Loading overlay */}
             {loading && (
                 <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
                     <img src={loadinggif} alt="Loading..." className="h-28" />
                     <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
                 </div>
             )}
-    
+
             {/* Back button */}
             <div className="flex items-center">
                 <Link to="/token-claimmableeventlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
                     <FiArrowLeft className="h-5 w-5 mr-1" /> Back to Attended Events
                 </Link>
             </div>
-    
+
             {/* Title */}
             <h3 className="text-xl lg:text-4xl font-bold text-center text-[#0b287b] mt-4 mb-6">Please ensure that you mark your attendance before proceeding to claim tokens</h3>
-    
+
             {/* Map and attendance UI */}
             <div className="flex flex-col items-center justify-center">
                 {/* Google Maps component */}

@@ -145,7 +145,7 @@ const Enroll = () => {
             <div className="flex items-center">
                 <Link to="/eventenrollmentlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
                     <FiArrowLeft className="h-5 w-5 mr-1" />
-                    Back to Event Enrollement List
+                    Back to Event Enrollment List
                 </Link>
             </div>
 
