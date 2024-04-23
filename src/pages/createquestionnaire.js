@@ -1,3 +1,8 @@
+/*
+ * Source code written by SEGP Group P
+ * Questionnairre creation component for Nottingham s-CPD website
+ * External libraries used: react, react-router-dom, ethers
+ */
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { useParams } from 'react-router-dom';
@@ -9,26 +14,34 @@ import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingC
 import { questionnaireContractAddress, questionnaireContractABI } from '../Address&Abi/QuestionnaireContract'
   
 const CreateQuestionnaire = () => {
+    // Retrieve event ID from URL parameters
     const { eventId } = useParams();
+    // State to store event details
     const [eventDetails, setEventDetails] = useState(null);
+    // State to store signer's Ethereum address
 	const [signerAddress, setSignerAddress] = useState('');
+    // State to track loading state
     const [loading, setLoading] = useState(false); 
 
-    // Form state
+    // Form state for Question 1
     const [question1, setQuestion1] = useState('');
     const [answer1A, setAnswer1A] = useState('');
     const [answer1B, setAnswer1B] = useState('');
     const [correctAnswer1, setCorrectAnswer1] = useState('');
 
+    // Form state for Question 2
     const [question2, setQuestion2] = useState('');
     const [answer2A, setAnswer2A] = useState('');
     const [answer2B, setAnswer2B] = useState('');
     const [correctAnswer2, setCorrectAnswer2] = useState('');
 
+    // Ethereum provider and signer
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
+    // Ethereum contract instances
     const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
 
+    // Fetch event details and signer's address on component mount
     useEffect(() => {
         const fetchEventDetails = async () => {
             try {
@@ -62,10 +75,12 @@ const CreateQuestionnaire = () => {
         fetchSignerAddress();
     }, [eventId, provider, votingContract]);    
 
+    // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
+            // Construct questionnaire data
             const questions = [question1, question2];
             const options = [
                 [answer1A, answer1B],
@@ -73,6 +88,7 @@ const CreateQuestionnaire = () => {
             ];
             const correctAnswers = [correctAnswer1, correctAnswer2];
 
+            // Deploy questionnaire contract and add questionnaire
             const questionnaireContract = new ethers.Contract(
                 questionnaireContractAddress,
                 questionnaireContractABI,
@@ -84,6 +100,7 @@ const CreateQuestionnaire = () => {
             await transaction.wait();
 			setLoading(false);
 
+            // Clear form fields and provide success feedback
             setQuestion1('');
             setAnswer1A('');
             setAnswer1B('');
@@ -100,25 +117,34 @@ const CreateQuestionnaire = () => {
         }
     };
 
+    // Render loading indicator if event details are not yet fetched
     if (!eventDetails) {
         return <p>Loading...</p>;
     }
 
+    // Render the CreateQuestionnaire component UI
     return (
         <div className="relative">
+            {/* Render Navbar component with signer address */}
             <Navbar signerAddress={signerAddress} />
+
+            {/* Render loading overlay when transaction is in progress */}
             {loading && (
                 <div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
                     <img src={loadinggif} alt="Loading..." className="h-28" />
                     <p className="text-white ml-3">Please wait for the transaction to be successful...</p>
                 </div>
             )}
+
+            {/* Render Back button */}
             <div className="flex items-center">
-                <Link to="/createdlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
+                <Link to="/questionnairecreationeventlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
                     <FiArrowLeft className="h-5 w-5 mr-1" />
-                    Back to Created Event List
+                    Back to Questionnaire Creation Event List
                 </Link>
             </div>
+
+            {/* Render questioannaire details */}
             <h3 className="text-2xl lg:text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Create Custom Questionnaire</h3>
             <div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
                 <img src={`${eventDetails.ipfsHash}`} alt={eventDetails.name} className="w-full h-60 lg:h-96 object-cover mb-4 rounded-lg" />
@@ -130,6 +156,7 @@ const CreateQuestionnaire = () => {
                     onSubmit={handleSubmit}
                     className="max-w-md mx-auto p-6 bg-white"
                 >
+                    {/* Form inputs for Question 1 */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="question1">
                             Question 1:
@@ -167,7 +194,7 @@ const CreateQuestionnaire = () => {
                         </select>
                     </div>
 
-
+                    {/* Form inputs for Question 2 */}
                     <div className="mb-4">
                         <label className="block text-gray-700 text-lg font-bold mb-2" htmlFor="question2">
                             Question 2:
@@ -205,6 +232,7 @@ const CreateQuestionnaire = () => {
                         </select>
                     </div>
 
+                    {/* Submit button */}
                     <div className="mb-4">
                         <button
                             className="w-full bg-[#002D74] text-white font-bold py-2 px-4 rounded hover:bg-blue-700 focus:outline-none focus:shadow-outline"

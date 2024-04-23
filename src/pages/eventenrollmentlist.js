@@ -1,3 +1,9 @@
+/*
+ * Source code written by SEGP Group P
+ * EventEnrollmentList component for managing event enrollment for Nottingham s-CPD website
+ * External libraries used: react, ethers, react-router-dom, react-collapsible
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
@@ -8,7 +14,8 @@ import { FaArrowAltCircleRight } from 'react-icons/fa';
 import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
 import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
 
-const StudentEvents = () => {
+const EventEnrollmentList = () => {
+    // State variables for managing event data and user interaction
     const [openEvents, setOpenEvents] = useState([]);
     const [enrolledEvents, setEnrolledEvents] = useState([]);
 	const [pastEvents, setPastEvents] = useState([]);
@@ -16,12 +23,14 @@ const StudentEvents = () => {
     const [isEnrollableEventsOpen, setIsEnrollableEventsOpen] = useState(true);
     const [isEnrolledEventsOpen, setIsEnrolledEventsOpen] = useState(false);
     const [isPastEventsOpen, setIsPastEventsOpen] = useState(false);
+    // Refs for scroll handling
     const enrollableEventsRef = useRef(null);
     const enrolledEventsRef = useRef(null);
     const pastEventsRef = useRef(null);
+    // Ethereum provider setup
     const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    
+    // Fetch event data and user address on component mount
     useEffect(() => {
         async function fetchData() {
             try {
@@ -35,7 +44,6 @@ const StudentEvents = () => {
                         const userHasEnrolled = await eventRegistryContract.hasEnrolled(event.eventId, signer.getAddress());
                         const finalTokens = await votingContract.getEventFinalTokens(event.eventId);
                         const currentTime = new Date().getTime();
-                        const totalVotes = await votingContract.g
                         const eventTime = event.time * 1000;
                         let status = '';
                         if (currentTime < eventTime) {
@@ -71,6 +79,7 @@ const StudentEvents = () => {
     
         fetchData();
     
+        // Function to fetch signer's Ethereum address
         async function fetchSignerAddress() {
             try {
                 const signer = provider.getSigner();
@@ -84,6 +93,7 @@ const StudentEvents = () => {
         fetchSignerAddress();
     }, [provider]);
     
+    // Function to handle horizontal scrolling
     useEffect(() => {
         function handleWheelScroll(event) {
             const delta = Math.max(-1, Math.min(1, event.deltaY));
@@ -118,12 +128,15 @@ const StudentEvents = () => {
         };
     }, [enrollableEventsRef, enrolledEventsRef, pastEventsRef]);
 
+    // Render the EventEnrollmentList component UI
     return (
         <div>
+            {/* Render Navbar component with signer address */}
             <Navbar signerAddress={signerAddress} />
+            {/* Render title */}
             <h3 className="text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Event Enrollment</h3>
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-
+                {/* Render Collapsible container for open events */}
                 <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
@@ -137,17 +150,15 @@ const StudentEvents = () => {
                         open={isEnrollableEventsOpen}
                         transitionTime={200}
                     >
-
+                        {/* Render list of open events */}
                         <div className="flex flex-nowrap overflow-x-auto py-4" ref={enrollableEventsRef}>
                             {openEvents.length === 0 ? (
                                 <div className="flex justify-center items-center h-full w-full">
-                                <div className="text-center">
-                                    <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
-                                    <p className="text-gray-600">Apologies, there are currently no events available for enrollment. Feel free to join our upcoming events!</p>
+                                    <div className="text-center">
+                                        <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
+                                        <p className="text-gray-600">Apologies, there are currently no events available for enrollment. Feel free to join our upcoming events!</p>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            
                             ) : (
                                 openEvents.map((event, index) => (
                                     <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
@@ -171,10 +182,10 @@ const StudentEvents = () => {
                                 ))
                             )}
                         </div>
-
                     </Collapsible>
                 </div>
-
+                
+                {/* Render Collapsible container for enrolled events */}
                 <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
@@ -188,16 +199,15 @@ const StudentEvents = () => {
                         open={isEnrolledEventsOpen}
                         transitionTime={200}
                     >
+                        {/* Render list of enrolled events */}
                         <div className="flex flex-nowrap overflow-x-auto py-4" ref={enrolledEventsRef}>
                             {enrolledEvents.length === 0 ? (
                                 <div className="flex justify-center items-center h-full w-full">
-                                <div className="text-center">
-                                    <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
-                                    <p className="text-gray-600">Apologies, there are currently no events available for enrollment. Feel free to join our upcoming events!</p>
+                                    <div className="text-center">
+                                        <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
+                                        <p className="text-gray-600">Apologies, there are currently no events available for enrollment. Feel free to join our upcoming events!</p>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            
                             ) : (
                                 enrolledEvents.map((event, index) => (
                                     <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
@@ -223,7 +233,8 @@ const StudentEvents = () => {
                         </div>
                     </Collapsible>
                 </div>
-
+                
+                {/* Render Collapsible container for past events */}
                 <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
@@ -237,16 +248,15 @@ const StudentEvents = () => {
                         open={isPastEventsOpen}
                         transitionTime={200}
                     >
+                        {/* Render list of past events */}
                         <div className="flex flex-nowrap overflow-x-auto py-4" ref={pastEventsRef}>
                             {pastEvents.length === 0 ? (
                                 <div className="flex justify-center items-center h-full w-full">
-                                <div className="text-center">
-                                    <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
-                                    <p className="text-gray-600">Apologies, there are currently no events available for enrollment. Feel free to join our upcoming events!</p>
+                                    <div className="text-center">
+                                        <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
+                                        <p className="text-gray-600">Apologies, there are currently no events available for enrollment. Feel free to join our upcoming events!</p>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            
                             ) : (
                                 pastEvents.map((event, index) => (
                                     <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
@@ -274,4 +284,4 @@ const StudentEvents = () => {
     );
 };
 
-export default StudentEvents;
+export default EventEnrollmentList;

@@ -1,4 +1,4 @@
-export const votingContractAddress = '0x7DE9f9Da543e33aF121073f74fF96f28eb6988f4';
+export const votingContractAddress = '0xb589182C588E38BBb18c83eDA1dd92Af131A6908';
 export const votingContractABI = [
 	{
 		"inputs": [
@@ -11,7 +11,7 @@ export const votingContractABI = [
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
-	{	
+	{
 		"anonymous": false,
 		"inputs": [
 			{

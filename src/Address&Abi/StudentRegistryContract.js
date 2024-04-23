@@ -1,34 +1,5 @@
-export const StudentInfoAddress = '0x6006C38941B29b44f3569bAE74092906B50578Db';
-
+export const StudentInfoAddress = '0x4d1A66010Ef744f7E2018007E7f226bCC958eDBB';
 export const StudentInfoAbi = [
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_studentID",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_email",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_password",
-				"type": "string"
-			}
-		],
-		"name": "registerStudent",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
 	{
 		"anonymous": false,
 		"inputs": [
@@ -220,6 +191,34 @@ export const StudentInfoAbi = [
 		"inputs": [
 			{
 				"internalType": "string",
+				"name": "_studentID",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_email",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_password",
+				"type": "string"
+			}
+		],
+		"name": "registerStudent",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
 				"name": "",
 				"type": "string"
 			}
@@ -293,4 +292,4 @@ export const StudentInfoAbi = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
+];

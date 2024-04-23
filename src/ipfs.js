@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Replace with your actual Pinata API key and secret
 const pinataApiKey = 'b1361df614521104e4ab';
 const pinataSecretApiKey = '4183cb1e5276ba655b5174520a224bdc6b2f40b0a9e19a6fc4bfbc39ccddebf6';
 

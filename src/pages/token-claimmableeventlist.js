@@ -1,3 +1,9 @@
+/*
+ * Source code written by SEGP Group P
+ * TokenClaimableEventList component for displaying claimable and claimed events for Nottingham s-CPD website
+ * External libraries used: react, ethers, react-router-dom, react-collapsible
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
@@ -10,30 +16,38 @@ import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingC
 import { NOTTAddress, NOTTABI } from '../Address&Abi/NottinghamCoinContract';
 
 
-const ClaimToken = () => {
+const TokenClaimmableEventList = () => {
+    // State to store claimable and claimed events
     const [enrolledAndPassedEvents, setEnrolledAndPassedEvents] = useState([]);
+    // State to store signer's Ethereum address
     const [signerAddress, setSignerAddress] = useState('');
+    // State to toggle visibility of claimable events
     const [isClaimableEventsOpen, setIsClaimableEventsOpen] = useState(true);
+    // State to toggle visibility of claimed events
     const [isClaimedEventsOpen, setIsClaimedEventsOpen] = useState(false);
+    // References for scrolling within event lists
     const claimableEventsRef = useRef(null);
     const claimedEventsRef = useRef(null);
     
+    // Ethereum provider and signer setup
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
 
+    // Fetch data on component mount
     useEffect(() => {
         async function fetchData() {
             try {
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
+                // Contracts instances
                 const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
                 const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
                 const NOTTContract = new ethers.Contract(NOTTAddress, NOTTABI, signer);
         
+                // Fetch active events
                 const events = await eventRegistryContract.getActiveEvents();
                 const currentTime = new Date().getTime();
         
                 const eventsWithDetails = await Promise.all(events.map(async (event) => {
+                    // Fetch various details for each event
                     const hasEnrolledPromise = eventRegistryContract.hasEnrolled(event.eventId, signer.getAddress());
                     const remainingTimePromise = votingContract.getRemainingTime(event.eventId);
                     const finalTokensPromise = votingContract.getEventFinalTokens(event.eventId);
@@ -47,6 +61,7 @@ const ClaimToken = () => {
                         claimedPromise
                     ]);
         
+                    // Filter events based on enrollment and time criteria
                     const eventTime = event.time * 1000;
                     const threeHoursAfterEvent = eventTime + (3 * 60 * 60 * 1000);
                     let status = currentTime < eventTime ? 'Active' : 'Past';
@@ -73,6 +88,7 @@ const ClaimToken = () => {
                     }
                 }));
         
+                // Filter out undefined events and set state
                 const enrolledAndPassedEventsDetails = eventsWithDetails.filter(event => event !== undefined);
                 setEnrolledAndPassedEvents(enrolledAndPassedEventsDetails);
             } catch (error) {
@@ -82,6 +98,7 @@ const ClaimToken = () => {
         
         fetchData();
 
+        // Fetch signer's Ethereum address
         async function fetchSignerAddress() {
             try {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -96,6 +113,7 @@ const ClaimToken = () => {
         fetchSignerAddress();
     }, []);
     
+    // Handle horizontal scrolling within event lists
     useEffect(() => {
         function handleWheelScroll(event) {
             const delta = Math.max(-1, Math.min(1, event.deltaY));
@@ -120,15 +138,19 @@ const ClaimToken = () => {
         };
     }, []);
 
+    // Filter claimed and claimable events
     const claimedEvents = enrolledAndPassedEvents.filter(event => event.claimed);
     const pendingClaimEvents = enrolledAndPassedEvents.filter(event => !event.claimed);    
 
+    // Render the TokenClaimmableEventList component UI
     return (
         <div>
+            {/* Render Navbar component with signer address */}
             <Navbar signerAddress={signerAddress} />
             <h3 className="text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Claim Tokens</h3>
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
+                {/* Render collapsible section for claimable events */}
                 <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
@@ -143,6 +165,7 @@ const ClaimToken = () => {
                         transitionTime={200}
                     >
                        <div className="flex flex-nowrap overflow-x-auto py-4" ref={claimableEventsRef}>
+                            {/* Render message if no claimable events */}
                             {pendingClaimEvents.length === 0 ? (
                                 <div className="flex justify-center items-center h-full w-full">
                                 <div className="text-center">
@@ -153,6 +176,7 @@ const ClaimToken = () => {
                             
                             
                             ) : (
+                                // Render claimable events
                                 pendingClaimEvents.map((event, index) => (
                                     <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
                                         <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full">
@@ -175,6 +199,7 @@ const ClaimToken = () => {
                     </Collapsible>
                 </div>
 
+                {/* Render collapsible section for claimed events */}
                 <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
@@ -189,6 +214,7 @@ const ClaimToken = () => {
                         transitionTime={200}
                     >
                         <div className="flex flex-nowrap overflow-x-auto py-4" ref={claimedEventsRef}>
+                            {/* Render message if no claimed events */}
                             {claimedEvents.length === 0 ? (
                                 <div className="flex justify-center items-center h-full w-full">
                                 <div className="text-center">
@@ -199,6 +225,7 @@ const ClaimToken = () => {
                             
                             
                             ) : (
+                                // Render claimed events
                                 claimedEvents.map((event, index) => (
                                     <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
                                         <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full">
@@ -225,4 +252,4 @@ const ClaimToken = () => {
     
 };
 
-export default ClaimToken;
+export default TokenClaimmableEventList;

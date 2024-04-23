@@ -1,3 +1,9 @@
+/*
+ * Source code written by SEGP Group P
+ * Website guide component for guiding users on using the Nottingham s-CPD website
+ * External libraries used: react, ethers
+ */
+
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import Navbar from '../components/Navbar';
@@ -7,14 +13,21 @@ import Step2Logo from '../Images/step2.png';
 import Step3Logo from '../Images/step3.png';
 import Step4Logo from '../Images/step4.png';
 
-export default function Steps () {
-	const [signerAddress, setSignerAddress] = useState('');
+export default function WebsiteGuide () {
+    // State to store signer's Ethereum address
+    const [signerAddress, setSignerAddress] = useState('');
+    // State to track component loading status
     const [isLoaded, setIsLoaded] = useState(false);
+    // Ethereum provider setup
     const provider = new ethers.providers.Web3Provider(window.ethereum);
+    // Address of User of the governance body (change it to your wallet address if you want to access the functions of the governance body)
     const showGovernanceStep = signerAddress === '0x2Ffd02772a9A33D73aD16908dF16900AD1326f3E' || signerAddress === '0x0a7665c13953491c66A3313c1256c2800E5D9853' || signerAddress === '0x59BA804564A7dD67A2b29F319d9983414284c297' || signerAddress === '0xa504E86C89Cc27fE8422316293d00b4ef945E4De';
+    // Ethereum token contract address
     const tokenContractAddress = '0xd4BCA3131b49613F069980B1026CC96202Cc2786';
+    // State to track successful copying of contract address
     const [copySuccess, setCopySuccess] = useState(false);
 
+    // Fetch signer's Ethereum address on component moun
     useEffect(() => {
         setIsLoaded(true);
 
@@ -31,6 +44,7 @@ export default function Steps () {
 		  fetchSignerAddress();
     }, []);
 
+    // Function to copy token contract address to clipboard
     const copyToClipboard = async () => {
         try {
             await navigator.clipboard.writeText(tokenContractAddress);
@@ -45,9 +59,12 @@ export default function Steps () {
 
     return (
         <div>
+            {/* Render Navbar component with signer address */}
 			<Navbar signerAddress={signerAddress} />
             <div className="max-w-4xl mx-auto py-12">
+                {/* Title */}
                 <h1 className="text-[#0b287b] text-4xl font-bold text-center mb-8">Step by Step Guide on How to Use the System</h1>
+                {/* Conditional rendering based on user role (governance body users) */}
                 {showGovernanceStep && (
                     <>
                         <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInRight' : 'opacity-0'}`}>
@@ -89,6 +106,7 @@ export default function Steps () {
                     </>
                 )}
 
+                {/* Conditional rendering based on user role (student users) */}
                 {!showGovernanceStep && (
                 <>
                     <div className={`flex flex-col md:flex-row items-center justify-between gap-4 mb-8 transition-opacity duration-1000 ${isLoaded ? 'opacity-100 animate-slideInRight' : 'opacity-0'}`}>

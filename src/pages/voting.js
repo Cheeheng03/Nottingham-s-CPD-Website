@@ -1,3 +1,9 @@
+/*
+ * Source code written by SEGP Group P
+ * Vote component for voting on events for Nottingham s-CPD website
+ * External libraries used: react, ethers
+ */
+
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { useParams } from 'react-router-dom';
@@ -10,72 +16,90 @@ import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingC
 
 
 const VotePage = () => {
+    // Retrieve event ID from URL parameters
     const { eventId } = useParams();
+    // State to store event details
     const [event, setEvent] = useState(null);
+    // State to store the number of tokens worth
     const [tokensWorth, setTokensWorth] = useState(5);
+    // State to track whether the user has voted
     const [hasVoted, setHasVoted] = useState(false);
+    // State to track remaining time for voting
     const [remainingTime, setRemainingTime] = useState(0);
+    // State to store total votes for each token value
 	const [totalVotesForToken5, setTotalVotesForToken5] = useState(0);
 	const [totalVotesForToken10, setTotalVotesForToken10] = useState(0);
 	const [totalVotesForToken15, setTotalVotesForToken15] = useState(0);
+    // State to store signer's Ethereum address
 	const [signerAddress, setSignerAddress] = useState('');
+    // State to track loading state
 	const [loading, setLoading] = useState(false); 
+    // Ethereum provider setup
 	const provider = new ethers.providers.Web3Provider(window.ethereum);
 
+    // useEffect hook to fetch event details, remaining time, and votes for tokens
     useEffect(() => {
+        // Function to initialize page
 		const initializePage = async () => {
 			await fetchEvent();
 			await fetchRemainingTime();
 			await fetchVotesForTokens();
 	
+			// Check if the user has voted
 			const userHasVoted = await getVotesForTokenFromBlockchain(eventId, tokensWorth) > 0;
 			setHasVoted(userHasVoted);
-
 		};
+		// Fetch signer's Ethereum address
 		fetchSignerAddress();
+		// Initialize page
 		initializePage();
 	
+		// Update remaining time every second
 		const intervalId = setInterval(() => {
 			updateRemainingTime();
 		}, 1000);
 	
 		return () => clearInterval(intervalId);
 
+		// Function to fetch signer's Ethereum address
 		async function fetchSignerAddress() {
 			try {
 			  const signer = provider.getSigner();
 			  const address = await signer.getAddress();
 			  setSignerAddress(address);
-			  console.log("signer:", address);
 			} catch (error) {
 			  console.error('Error fetching signer address:', error);
 			}
 		}
 	}, [eventId, tokensWorth]);
+
+    // Function to fetch event details from the blockchain
     const fetchEvent = async () => {
-      try {
-        const event = await getEventFromBlockchain(eventId);
-        setEvent(event);
-      } catch (error) {
-        console.error('Error fetching event:', error);
-      }
+        try {
+            const event = await getEventFromBlockchain(eventId);
+            setEvent(event);
+        } catch (error) {
+            console.error('Error fetching event:', error);
+        }
     };
   
+    // Function to fetch remaining time for voting from the blockchain
     const fetchRemainingTime = async () => {
         try {
             const remainingTimeFromBlockchain = await getRemainingTimeFromBlockchain(eventId);
-            console.log("Remaining Time from Blockchain:", remainingTimeFromBlockchain);
             setRemainingTime(remainingTimeFromBlockchain);
         } catch (error) {
             console.error('Error fetching remaining time:', error);
         }
     };
 
+    // Function to update remaining time every second
     const updateRemainingTime = () => {
         setRemainingTime((prevRemainingTime) => (prevRemainingTime > 0 ? prevRemainingTime - 1 : 0));
     };
     
   
+    // Function to fetch total votes for each token value from the blockchain
     const fetchVotesForTokens = async () => {
 		try {
 			const totalVotes5 = await getTotalVotesForTokenFromBlockchain(eventId, 5);
@@ -89,8 +113,8 @@ const VotePage = () => {
 			console.error('Error fetching votes for tokens:', error);
 		}
 	};
-	
-  
+
+    // Function to fetch event details from the blockchain
     const getEventFromBlockchain = async (eventId) => {
       const signer = provider.getSigner();
       const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
@@ -104,6 +128,7 @@ const VotePage = () => {
       }
     };
   
+    // Function to fetch remaining time for voting from the blockchain
     const getRemainingTimeFromBlockchain = async (eventId) => {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
@@ -118,6 +143,7 @@ const VotePage = () => {
       }
     };
   
+    // Function to fetch votes for a specific token value from the blockchain
     const getVotesForTokenFromBlockchain = async (eventId, tokens) => {
       const signer = provider.getSigner();
       const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
@@ -131,6 +157,7 @@ const VotePage = () => {
       }
     };
 
+	// Function to fetch total votes for a specific token value from the blockchain
 	const getTotalVotesForTokenFromBlockchain = async (eventId, tokens) => {
 		const signer = provider.getSigner();
 		const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
@@ -144,7 +171,8 @@ const VotePage = () => {
 		}
 	};
 	  
-	  const handleVote = async () => {
+	// Function to handle voting process
+	const handleVote = async () => {
 		try {
 		  const signer = provider.getSigner();
 		  const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
@@ -180,13 +208,18 @@ const VotePage = () => {
 		}
 	  };
   
+    // Render loading indicator if event details are not yet fetched
     if (!event) {
       return <div>Loading...</div>;
     }
 
+    // Render the VotePage component UI
     return (
     <div className="relative">
+		{/* Render Navbar component with signer address */}
 		<Navbar signerAddress={signerAddress} />
+
+    	{/* Render loading overlay when transaction is in progress */}
 		{loading && (
 			<div className="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center z-50">
 				<img src={loadinggif} alt="Loading..." className="h-28" />
@@ -194,13 +227,15 @@ const VotePage = () => {
 			</div>
 		)}
 
+    	{/* Render Back button */}
 		<div className="flex items-center">
-			<Link to="/eventlist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
-			<FiArrowLeft className="h-5 w-5 mr-1" />
-			Back to Event List
+			<Link to="/eventvotinglist" className="text-blue-500 ml-4 mt-2 text-sm font-medium flex items-center">
+				<FiArrowLeft className="h-5 w-5 mr-1" />
+				Back to Event Voting List
 			</Link>
 		</div>
 	
+		{/* Render event details */}
 		<h3 className="text-2xl font-bold text-center text-[#0b287b] mb-8 mt-4">Vote for {event.name}</h3>
 		<div className="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg">
 			<img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-60 lg:h-96 object-cover mb-4 rounded-lg" />
@@ -262,11 +297,12 @@ const VotePage = () => {
 			onChange={(e) => setTokensWorth(e.target.value)}
 			className="mt-1 p-2 w-full border border-gray-300 rounded-md"
 			>
-			<option value="5">5 tokens</option>
-			<option value="10">10 tokens</option>
-			<option value="15">15 tokens</option>
+				<option value="5">5 tokens</option>
+				<option value="10">10 tokens</option>
+				<option value="15">15 tokens</option>
 			</select>
 	
+			{/* Render vote button */}
 			<button
 				onClick={handleVote}
 				className={`mt-4 p-2 rounded-md cursor-pointer ${
@@ -281,6 +317,7 @@ const VotePage = () => {
   );
 };
 
+// Function to format remaining time in HH:MM:SS format
 const formatRemainingTime = (remainingTime) => {
 	if (remainingTime <= 0) {
 	  return '00:00:00';
@@ -291,8 +328,9 @@ const formatRemainingTime = (remainingTime) => {
 	const hours = Math.floor(remainingTime / 3600);
   
 	return `${padZero(hours)}:${padZero(minutes)}:${padZero(seconds)}`;
-  };	
+};	
 
+// Function to pad zero for single-digit numbers
 const padZero = (num) => {
     return num < 10 ? `0${num}` : `${num}`;
 };

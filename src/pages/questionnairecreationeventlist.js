@@ -1,15 +1,22 @@
+/*
+ * Source code written by SEGP Group P
+ * QuestionnaireCreationEventList component for managing questionnaire creation events for Nottingham s-CPD website
+ * External libraries used: react, ethers, react-router-dom, react-collapsible
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Collapsible from 'react-collapsible';
-import oops from '../Images/oops.gif'
+import oops from '../Images/oops.gif';
 import { FaArrowAltCircleRight } from 'react-icons/fa';
-import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
-import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
-import { questionnaireContractAddress, questionnaireContractABI } from '../Address&Abi/QuestionnaireContract'
+import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract';
+import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract';
+import { questionnaireContractAddress, questionnaireContractABI } from '../Address&Abi/QuestionnaireContract';
 
-const CreatedList = () => {
+const QuestionnaireCreationEventList = () => {
+    // State variables for managing event data and user interaction
     const [createdEvents, setCreatedEvents] = useState([]); 
     const [dueOrVotedEvents, setDueOrVotedEvents] = useState([]);
     const [questionnaireStatus, setQuestionnaireStatus] = useState({});
@@ -17,16 +24,18 @@ const CreatedList = () => {
     const [isPendingEventsOpen, setIsPendingEventsOpen] = useState(true);
     const [isCreatedEventsOpen, setIsCreatedEventsOpen] = useState(false);
     const [isPastEventsOpen, setIsPastEventsOpen] = useState(false);
+    // Refs for scroll handling
     const pendingEventsRef = useRef(null);
     const createdEventsRef = useRef(null);
     const pastEventsRef = useRef(null);
+    // Ethereum provider setup
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-  
     const signer = provider.getSigner();
     const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
     const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
     const questionnaireContract = new ethers.Contract(questionnaireContractAddress, questionnaireContractABI, signer);
 
+    // Fetch created events and user address on component mount
     useEffect(() => {
       fetchCreatedEvents();
 
@@ -43,6 +52,7 @@ const CreatedList = () => {
 	  fetchSignerAddress();
     }, []);
     
+    // Function to fetch created events from blockchain
     const fetchCreatedEvents = async () => {
         try {
             if (!window.ethereum) {
@@ -91,6 +101,7 @@ const CreatedList = () => {
 
 	const currentTime = new Date().getTime();
 
+	// Filter pending events
 	const pendingEvents = createdEvents.filter(event => {
 		return (
 			dueOrVotedEvents.includes(event) &&
@@ -99,6 +110,7 @@ const CreatedList = () => {
 		);
 	});
 
+	// Filter created events
 	const createdEventsList = createdEvents.filter(event => {
 		return (
 			dueOrVotedEvents.includes(event) &&
@@ -107,12 +119,14 @@ const CreatedList = () => {
 		);
 	});
 	
+	// Filter past events
 	const pastEvents = createdEvents.filter(event => {
 		return (
 			event.time.mul(1000).toNumber() < currentTime
 		);
 	});
 	
+    // Effect for handling horizontal scrolling
     useEffect(() => {
         function handleWheelScroll(event) {
             const delta = Math.max(-1, Math.min(1, event.deltaY));
@@ -143,12 +157,16 @@ const CreatedList = () => {
         };
     }, []);
     
+	// Render the QuestionnaireCreationEventList component UI
 	return (
         <div>
+            {/* Render Navbar component with signer address */}
             <Navbar signerAddress={signerAddress} />
+            {/* Render title */}
             <h3 className="text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Questionnaire Creation</h3>
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
+                {/* Render Collapsible container for pending events */}
                 <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
@@ -185,6 +203,7 @@ const CreatedList = () => {
                                                     <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
                                                     <p className="mt-1 text-gray-600">Description: {event.description}</p>
                                                 </div>
+                                                {/* Link to create questionnaire for the event */}
                                                 <Link to={`/questionnaire/${event.eventId}`} className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center block">
                                                     Create Questionnaire
                                                 </Link>
@@ -197,11 +216,12 @@ const CreatedList = () => {
                     </Collapsible>
                 </div>
 
+                {/* Render Collapsible container for created events */}
                 <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
                             <div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4 flex justify-between items-center" onClick={() => setIsCreatedEventsOpen(!isCreatedEventsOpen)}>
-                                <span className='w-full'>Created Events</span>
+                                <span className='w-full'>Created Questionnaires</span>
                                 <div className={`transform transition-transform ${isCreatedEventsOpen ? 'rotate-90' : 'rotate-0'}`}>
                                     <FaArrowAltCircleRight size={24} />
                                 </div>
@@ -233,6 +253,7 @@ const CreatedList = () => {
                                                     <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
                                                     <p className="mt-1 text-gray-600">Description: {event.description}</p>
                                                 </div>
+                                                {/* Link to edit questionnaire for the event */}
                                                 <Link to={`/editquestionnaire/${event.eventId}`} className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mt-4 text-center block">
                                                     Edit Questionnaire
                                                 </Link>
@@ -245,6 +266,7 @@ const CreatedList = () => {
                     </Collapsible>
                 </div>
 
+                {/* Render Collapsible container for past events */}
                 <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
@@ -291,6 +313,6 @@ const CreatedList = () => {
             </div>
         </div>
     );
-  };
-  
-  export default CreatedList;
+};
+
+export default QuestionnaireCreationEventList;

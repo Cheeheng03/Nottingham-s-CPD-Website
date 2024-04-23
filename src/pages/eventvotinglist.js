@@ -1,3 +1,9 @@
+/*
+ * Source code written by SEGP Group P
+ * EventVotingList component for managing event voting for Nottingham s-CPD website
+ * External libraries used: react, ethers, react-router-dom, react-collapsible
+ */
+
 import React, { useState, useEffect, useRef } from 'react';
 import { ethers } from 'ethers';
 import { Link } from 'react-router-dom';
@@ -8,21 +14,23 @@ import { FaArrowAltCircleRight } from 'react-icons/fa';
 import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
 import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
 
-const EventList = () => {
+const EventVotingList = () => {
+    // State variables for managing event data and user interaction
     const [eventsList, setEventsList] = useState([]);
-	const [tokensWorth, setTokensWorth] = useState(5);
-	const [signerAddress, setSignerAddress] = useState('');
-	const [isPendingEventsOpen, setIsPendingEventsOpen] = useState(true);
+    const [tokensWorth, setTokensWorth] = useState(5);
+    const [signerAddress, setSignerAddress] = useState('');
+    const [isPendingEventsOpen, setIsPendingEventsOpen] = useState(true);
     const [isDueEventsOpen, setIsDueEventsOpen] = useState(false);
+    // Refs for scroll handling
     const pendingEventsRef = useRef(null);
     const dueEventsRef = useRef(null);
+    // Ethereum provider setup
     const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-
     const signer = provider.getSigner();
     const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
     const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
 
+    // Fetch event data and user address on component mount
     useEffect(() => {
         fetchEvents();
 
@@ -39,47 +47,52 @@ const EventList = () => {
 		  fetchSignerAddress();
     }, []);
 
-    const fetchEvents = async () => {
-		try {
-			const events = await eventRegistryContract.getActiveEvents();
-			const eventsWithVotes = await Promise.all(
-				events.map(async (event) => {
-					const remainingTime = await getRemainingTime(event.eventId);
-					const userHasVoted = await getVotesForTokenFromBlockchain(event.eventId, tokensWorth) > 0;
-					const status = remainingTime <= 0 ? "Due" : "Active";
-					return { ...event, remainingTime: remainingTime.toString(), hasVoted: userHasVoted, status };
-				})
-			);
-			setEventsList(eventsWithVotes);
-		} catch (error) {
-			console.error('Error fetching events:', error);
-		}
-	};
-	
-	const getRemainingTime = async (eventId) => {
-		try {
-			const remainingTime = await votingContract.getRemainingTime(eventId);
-			return remainingTime.toNumber(); 
-		} catch (error) {
-			console.error('Error fetching remaining time for event:', error);
-			return 0;
-		}
-	};
-	
-	const getVotesForTokenFromBlockchain = async (eventId, tokens) => {
-		try {
-			const votes = await votingContract.getVotesForToken(eventId, signer.getAddress());
-			return votes;
-		} catch (error) {
-			console.error('Error fetching votes for token:', error);
-			return 0;
-		}
-	};
+     // Function to fetch events from blockchain
+     const fetchEvents = async () => {
+        try {
+            const events = await eventRegistryContract.getActiveEvents();
+            const eventsWithVotes = await Promise.all(
+                events.map(async (event) => {
+                    const remainingTime = await getRemainingTime(event.eventId);
+                    const userHasVoted = await getVotesForTokenFromBlockchain(event.eventId, tokensWorth) > 0;
+                    const status = remainingTime <= 0 ? "Due" : "Active";
+                    return { ...event, remainingTime: remainingTime.toString(), hasVoted: userHasVoted, status };
+                })
+            );
+            setEventsList(eventsWithVotes);
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        }
+    };
 
-	const pendingEvents = eventsList.filter((event) => !event.hasVoted && event.remainingTime > 0);
+    // Function to fetch remaining time for an event from blockchain
+    const getRemainingTime = async (eventId) => {
+        try {
+            const remainingTime = await votingContract.getRemainingTime(eventId);
+            return remainingTime.toNumber();
+        } catch (error) {
+            console.error('Error fetching remaining time for event:', error);
+            return 0;
+        }
+    };
+
+    // Function to fetch votes for a token from blockchain
+    const getVotesForTokenFromBlockchain = async (eventId, tokens) => {
+        try {
+            const votes = await votingContract.getVotesForToken(eventId, signer.getAddress());
+            return votes;
+        } catch (error) {
+            console.error('Error fetching votes for token:', error);
+            return 0;
+        }
+    };
+
+    // Filter pending events and voted/due events
+    const pendingEvents = eventsList.filter((event) => !event.hasVoted && event.remainingTime > 0);
     const votedOrDueEvents = eventsList.filter((event) => event.hasVoted || event.remainingTime <= 0);
 
-	useEffect(() => {
+    // Effect for handling horizontal scrolling
+    useEffect(() => {
         function handleWheelScroll(event) {
             const delta = Math.max(-1, Math.min(1, event.deltaY));
             event.currentTarget.scrollLeft -= delta * 100;
@@ -103,13 +116,16 @@ const EventList = () => {
         };
     }, []);
 
-	return (
-		<div>
-			<Navbar signerAddress={signerAddress} />
-			<h3 className="text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Event Voting</h3>
-			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-
-				<div className="collapsible-container mt-4">
+    // Render the EventVotingList component UI
+    return (
+        <div>
+            {/* Render Navbar component with signer address */}
+            <Navbar signerAddress={signerAddress} />
+            {/* Render title */}
+            <h3 className="text-4xl font-bold text-center text-[#0b287b] mt-4 mb-8">Event Voting</h3>
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                {/* Render Collapsible container for pending events */}
+                <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
                             <div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4 flex justify-between items-center" onClick={() => setIsPendingEventsOpen(!isPendingEventsOpen)}>
@@ -122,17 +138,15 @@ const EventList = () => {
                         open={isPendingEventsOpen}
                         transitionTime={200}
                     >
-
+                        {/* Render list of pending events */}
                         <div className="flex flex-nowrap overflow-x-auto py-4" ref={pendingEventsRef}>
                             {pendingEvents.length === 0 ? (
                                 <div className="flex justify-center items-center h-full w-full">
-                                <div className="text-center">
-                                    <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
-                                    <p className="text-gray-600">Apologies, there are currently no events available for voting. Feel free to create an event!</p>
+                                    <div className="text-center">
+                                        <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
+                                        <p className="text-gray-600">Apologies, there are currently no events available for voting. Feel free to create an event!</p>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            
                             ) : (
                                 pendingEvents.map((event, index) => (
                                     <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
@@ -155,11 +169,10 @@ const EventList = () => {
                                 ))
                             )}
                         </div>
-
                     </Collapsible>
                 </div>
-
-				<div className="collapsible-container mt-4">
+                {/* Render Collapsible container for voted or due events */}
+                <div className="collapsible-container mt-4">
                     <Collapsible
                         trigger={
                             <div className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 mb-4 flex justify-between items-center" onClick={() => setIsDueEventsOpen(!isDueEventsOpen)}>
@@ -172,28 +185,27 @@ const EventList = () => {
                         open={isDueEventsOpen}
                         transitionTime={200}
                     >
+                        {/* Render list of voted or due events */}
                         <div className="flex flex-nowrap overflow-x-auto py-4" ref={dueEventsRef}>
                             {votedOrDueEvents.length === 0 ? (
                                 <div className="flex justify-center items-center h-full w-full">
-                                <div className="text-center">
-                                    <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
-                                    <p className="text-gray-600">Apologies, there are currently no events voted. Feel free to create an event!</p>
+                                    <div className="text-center">
+                                        <img src={oops} alt="Oops Image" className="mb-2 h-52 mx-auto" />
+                                        <p className="text-gray-600">Apologies, there are currently no events voted. Feel free to create an event!</p>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            
                             ) : (
                                 votedOrDueEvents.map((event, index) => (
                                     <div key={index} className="flex-none w-full sm:w-1/2 lg:w-1/3 px-4">
-											<div className="bg-white rounded-lg shadow-lg overflow-hidden h-full">
-												<img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 object-cover" />
-												<div className="p-4">
-												<p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
-												<p className="mt-1 text-gray-600">Name: {event.name}</p>
-												<p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
-												<p className="mt-1 text-gray-600">Venue: {event.venue}</p>
-												<p className="mt-1 text-gray-600">Description: {event.description}</p>
-											</div>
+                                        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-full">
+                                            <img src={`${event.ipfsHash}`} alt={event.name} className="w-full h-64 object-cover" />
+                                            <div className="p-4">
+                                                <p className="text-lg font-semibold text-gray-800">Event ID: {event.eventId.toString()}</p>
+                                                <p className="mt-1 text-gray-600">Name: {event.name}</p>
+                                                <p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
+                                                <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
+                                                <p className="mt-1 text-gray-600">Description: {event.description}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 ))
@@ -201,11 +213,9 @@ const EventList = () => {
                         </div>
                     </Collapsible>
                 </div>
-	
-			</div>
-		</div>
-	);
-	
+            </div>
+        </div>
+    );
 };
 
-export default EventList;
+export default EventVotingList;
