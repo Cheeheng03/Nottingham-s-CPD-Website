@@ -1,4 +1,4 @@
-export const questionnaireContractAddress = '0x8822DD1788adC7B6440063b5a1de8F55ced69914';
+export const questionnaireContractAddress = '0xAa1F406ef635E0FE2416B2222F7828509f5702CE';
 export const questionnaireContractABI = [
 	{
 		"inputs": [
