@@ -165,6 +165,7 @@ export default function CreateEventForm() {
 							<option value="F1A04">F1A04</option>
 							<option value="F1A12">F1A12</option>	
 							<option value="F1A13">F1A13</option>
+							<option value="TCR1">TCR1</option>
 							<option value="F3C04">F3C04</option>
 							<option value="F4C02">F4C02</option>
 							<option value="BB80">BB80</option>
@@ -175,14 +176,14 @@ export default function CreateEventForm() {
 
 					<div className="mb-4">
 						<label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="eventDescription">
-							Event Description:
+							Short Description:
 						</label>
 						<textarea
 							className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
 							placeholder="Event Description"
-							rows="6"
+							rows="4"
 						></textarea>
 					</div>
 

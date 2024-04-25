@@ -71,7 +71,7 @@ const EventEnrollmentList = () => {
                     })
                 );
                 const enrolledEventsDetails = eventsWithTokens.filter(event => event.hasEnrolled);
-                const openEventsDetails = eventsWithTokens.filter(event => !event.hasEnrolled && event.status === 'Active' && (event.remainingTime <= 0 || event.totalvotes > 0));
+                const openEventsDetails = eventsWithTokens.filter(event => !event.hasEnrolled && event.status === 'Active' && (event.remainingTime <= 0 || event.totalvotes == 2));
                 const pastEventsDetails = eventsWithTokens.filter(event => event.status === 'Past');
                 
                 setEnrolledEvents(enrolledEventsDetails);
