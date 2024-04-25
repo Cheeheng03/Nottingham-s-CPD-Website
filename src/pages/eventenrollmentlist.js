@@ -45,9 +45,10 @@ const EventEnrollmentList = () => {
                         const finalTokens = await votingContract.getEventFinalTokens(event.eventId);
                         const currentTime = new Date().getTime();
                         const eventTime = event.time * 1000;
-                        const totalVotesForEvent =  await votingContract.tokenTotalVotes(event.eventId, 5) +
-                                                    await votingContract.tokenTotalVotes(event.eventId, 10) +
-                                                    await votingContract.tokenTotalVotes(event.eventId, 15);
+                        const totalVotesForEvent = Number(await votingContract.tokenTotalVotes(event.eventId, 5)) +
+                                                    Number(await votingContract.tokenTotalVotes(event.eventId, 10)) +
+                                                    Number(await votingContract.tokenTotalVotes(event.eventId, 15));
+
 
                         let status = '';
                         if (currentTime < eventTime) {
@@ -55,6 +56,9 @@ const EventEnrollmentList = () => {
                         } else {
                             status = 'Past';
                         }
+
+                        console.log(`Total votes for Event ID ${event.eventId}: ${totalVotesForEvent}`);
+
                         return {
                             eventId: event.eventId,
                             name: event.name,
@@ -70,10 +74,10 @@ const EventEnrollmentList = () => {
                         };
                     })
                 );
+                
                 const enrolledEventsDetails = eventsWithTokens.filter(event => event.hasEnrolled);
                 const openEventsDetails = eventsWithTokens.filter(event => !event.hasEnrolled && event.status === 'Active' && (event.remainingTime <= 0 || event.totalvotes == 2));
                 const pastEventsDetails = eventsWithTokens.filter(event => event.status === 'Past');
-                
                 setEnrolledEvents(enrolledEventsDetails);
                 setOpenEvents(openEventsDetails);
                 setPastEvents(pastEventsDetails);
