@@ -211,7 +211,7 @@ function Home() {
                                     ) : (
                                         <>
                                         <h3 className="font-semibold text-4xl xl:text-5xl mb-10 mt-10">Check out our latest events now!</h3>
-                                        <a href="/studentevents" className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-600 flex items-center justify-center w-full lg:w-1/3">
+                                        <a href="/eventenrollmentlist" className="bg-blue-500 text-white py-2 px-4 rounded-lg mt-4 hover:bg-blue-600 flex items-center justify-center w-full lg:w-1/3">
                                             Go
                                         </a>
                                         </>
@@ -229,7 +229,7 @@ function Home() {
                         <div className="flex-grow h-52 lg:h-[20rem]">
                             <img src={enrollgif} alt="Enroll" className="w-full h-full object-cover rounded-t-xl" />
                         </div>
-                        <Link to="/studentevents" className="block">
+                        <Link to="/eventenrollmentlist" className="block">
                             <div 
                                 className="flex items-center justify-center lg:justify-between p-2 lg:p-4 bg-[#0b287b] rounded-b-xl cursor-pointer"
                                 style={{ 
