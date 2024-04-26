@@ -23,7 +23,7 @@ export default function WebsiteGuide () {
     // Address of User of the governance body (change it to your wallet address if you want to access the functions of the governance body)
     const showGovernanceStep = signerAddress === '0x2Ffd02772a9A33D73aD16908dF16900AD1326f3E' || signerAddress === '0x0a7665c13953491c66A3313c1256c2800E5D9853' || signerAddress === '0x59BA804564A7dD67A2b29F319d9983414284c297' || signerAddress === '0xa504E86C89Cc27fE8422316293d00b4ef945E4De';
     // Ethereum token contract address
-    const tokenContractAddress = '0x50D89431881FF001102A63D0c6a5Da7e4Fda544D';
+    const tokenContractAddress = '0x9a76140dDa2b30B7bF6Ed742Ea15bD9b9921ef36';
     // State to track successful copying of contract address
     const [copySuccess, setCopySuccess] = useState(false);
 

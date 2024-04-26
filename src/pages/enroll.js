@@ -14,6 +14,7 @@ import emailjs from "@emailjs/browser";
 import loadinggif from '../Images/loading.gif';
 import { StudentInfoAddress, StudentInfoAbi } from '../Address&Abi/StudentRegistryContract';
 import { eventRegistryContractAddress, eventRegistryContractABI } from '../Address&Abi/EventRegistryContract'
+import { votingContractAddress, votingContractABI } from '../Address&Abi/VotingContract'
 
 
 const Enroll = () => {
@@ -21,6 +22,8 @@ const Enroll = () => {
     const { eventId } = useParams();
     // State to store event details
     const [event, setEvent] = useState(null);
+    // State to store event details
+    const [finaltoken, setFinalToken] = useState(0);
     // State to track enrollment status
     const [enrolled, setEnrolled] = useState(false);
     // State to track enrollment process
@@ -44,6 +47,7 @@ const Enroll = () => {
     // Ethereum contract instances
     const eventRegistryContract = new ethers.Contract(eventRegistryContractAddress, eventRegistryContractABI, signer);
 	const StudentRegistryContract = new ethers.Contract(StudentInfoAddress, StudentInfoAbi, signer);
+    const votingContract = new ethers.Contract(votingContractAddress, votingContractABI, signer);
 
     // Fetch event details and user enrollment status on component mount
     useEffect(() => {
@@ -55,6 +59,8 @@ const Enroll = () => {
                 const userAddress = await signer.getAddress();
                 const isEnrolled = await eventRegistryContract.hasEnrolled(eventId, userAddress);
 				const studentInfo = await StudentRegistryContract.getStudentInfoByAddress(userAddress);
+                const finalTokens = await votingContract.getEventFinalTokens(eventId);
+                setFinalToken(finalTokens.toNumber());
                 setEnrolled(isEnrolled);
                 
                 // Set email parameters based on user and event details
@@ -157,6 +163,7 @@ const Enroll = () => {
                 <p className="mt-1 text-gray-600">Name: {event.name}</p>
                 <p className="mt-1 text-gray-600">Time: {new Date(event.time.mul(1000).toNumber()).toLocaleString()}</p>
                 <p className="mt-1 text-gray-600">Venue: {event.venue}</p>
+                <p className="mt-1 text-gray-600">Tokens Rewarded: {finaltoken}</p>
                 <p className="mt-1 text-gray-600">Description: {event.description}</p>
 
                 {/* Render enrollment button */}

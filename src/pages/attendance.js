@@ -149,7 +149,7 @@ const Attendance = () => {
         const areas = {
             "F3C04": { id: "F3", center: { lat: 2.94525, lng: 101.8765 }, radius: 40 },
             "F1A04": { id: "F1", center: { lat: 2.9450556, lng: 101.8756111 }, radius: 60 },
-            "F1A12": { id: "F1", center: { lat: 2.943230, lng: 101.877789 }, radius: 60 },
+            "F1A12": { id: "F1", center: { lat: 2.9450556, lng: 101.8756111 }, radius: 60 },
             "TCR1": { id: "TCR", center: { lat: 2.94547, lng: 101.87583 }, radius: 20 },
             "F1A13": { id: "F1", center: { lat: 2.9450556, lng: 101.8756111 }, radius: 60 },
             "F4C02": { id: "F4", center: { lat: 2.945718, lng: 101.876794 }, radius: 23 },

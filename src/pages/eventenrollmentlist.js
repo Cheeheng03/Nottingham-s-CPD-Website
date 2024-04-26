@@ -57,8 +57,6 @@ const EventEnrollmentList = () => {
                             status = 'Past';
                         }
 
-                        console.log(`Total votes for Event ID ${event.eventId}: ${totalVotesForEvent}`);
-
                         return {
                             eventId: event.eventId,
                             name: event.name,
