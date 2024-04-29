@@ -77,7 +77,7 @@ Each contract is crafted to ensure seamless and secure transactions on the block
 ## System Architecture
 Below is an overview of the system architecture highlighting how the different components interact within the application:
 
-![System Architecture](https://cdn.discordapp.com/attachments/1045654522711769121/1232398806931210290/architecture.jpg?ex=66295054&is=6627fed4&hm=3285a9e4ee79606c07814818851c43a6356e18f5391cc667662f636a4dfa854d&)
+![System Architecture](./readme_images/architecture.jpg)
 
 ## Usage
 
@@ -105,11 +105,11 @@ This application is deployed on netlify and connected with this GitHub repositor
 Link: https://nottingham-scpd-event.netlify.app
 
 ## Built with 
-<div style="display: flex; justify-content: space-between;">
-  <img src="https://cdn.discordapp.com/attachments/1045654522711769121/1232404963087614112/react.png?ex=66295610&is=66280490&hm=34bdf45c2bfbe28d0d106e7e25be754edc9e09a48d8e0c4d0016b25c4cc23655" width="50" height="50" alt="React Icon" />
-  <img src="https://cdn.discordapp.com/attachments/1045654522711769121/1232404962617725070/tailwind.png?ex=66295610&is=66280490&hm=124e00bf59c428fca3692d2cb1166b927f3628d6c6b8c4c71c1ce95004f9e727" width="75" height="50" alt="Tailwind Icon" />
-  <img src="https://cdn.discordapp.com/attachments/1045654522711769121/1232404962877640837/sol.png?ex=66295610&is=66280490&hm=275b9558af3c76a5d92e28c387670a8913568096f763e90b5455b551b0dd503f" width="100" height="50" alt="Web3 Icon" />
-  <img src="https://cdn.discordapp.com/attachments/1045654522711769121/1232405215332925522/fpB8TP6uiqSf8cPk8vLyDx8qSTbjo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6Ojo6OztXkN2PcC7YOiSgGAAAAAElFTkSuQmCC.png?ex=6629564c&is=662804cc&hm=b3d12de1ccff8dc2b2751d69105680e2869e293e5cbfe5a735beb7314f5e8acb" width="100" height="50" alt="Google Map Icon" />
+<div style="display: flex; justify-content: start;">
+  <img src="./readme_images/react.png" width="50" height="50" alt="React Icon" />
+  <img src="./readme_images/tailwind.png" width="75" height="50" alt="Tailwind Icon" />
+  <img src="./readme_images/etheruem.png" width="100" height="50" alt="Web3 Icon" />
+  <img src="./readme_images/googlemap.png" width="100" height="50" alt="Google Map Icon" />
 </div>
 
  
