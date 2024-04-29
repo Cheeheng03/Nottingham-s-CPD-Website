@@ -1,4 +1,4 @@
-export const StudentInfoAddress = '0x8420522BfBd18eE7915F99394e52d90F5C4CD7F7';
+export const StudentInfoAddress = '0x22a2228902fE695422881747b957484B3ab69Ee2';
 export const StudentInfoAbi = [
 	{
 		"anonymous": false,
