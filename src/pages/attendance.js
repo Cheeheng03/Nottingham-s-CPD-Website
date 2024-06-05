@@ -194,7 +194,7 @@ const Attendance = () => {
                 await transaction.wait();
                 setLoading(false);
                 setAttendanceMarked(true);
-                console.log("Attendance marked successfully!");
+                alert("Attendance marked successfully!");
             } catch (error) {
                 console.error('Error marking attendance:', error);
                 setLoading(false);
